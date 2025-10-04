@@ -1,0 +1,18 @@
+.modal {
+    display: flex; /* keep it flex always */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  
+  .modal-hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+    display:none;
+  }
+  
+  .modal-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
