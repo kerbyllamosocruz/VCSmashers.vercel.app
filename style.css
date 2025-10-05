@@ -1,5 +1,6 @@
+@import "tailwindcss";
 .modal {
-    display: flex; /* keep it flex always */
+    display: flex;
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
   
