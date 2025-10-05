@@ -1,4 +1,3 @@
-/*FONTS & BASE*/
 body {
   font-family: "Montserrat", sans-serif;
   background: #f8f8f8;
@@ -18,7 +17,7 @@ body {
   margin: 0 0 20px 0;
 }
 
-/*LAYOUT*/
+
 .container {
   display: flex;
   justify-content: center;
@@ -29,7 +28,6 @@ body {
   margin: 0 auto 40px;
 }
 
-/*LEFT SIDE*/
 .left-section {
   display: flex;
   flex-direction: column;
@@ -130,7 +128,6 @@ body {
   padding-bottom: 3px;
 }
 
-/*BOOKINGS*/
 .booking-card {
   border: 1px solid #eee;
   border-radius: 6px;
@@ -174,7 +171,6 @@ body {
   cursor: pointer;
 }
 
-/* ===== HEADER ===== */
 .site-header {
   background-color: #322d98;
   color: white;
@@ -204,7 +200,6 @@ body {
   text-decoration: underline;
 }
 
-/* ===== FOOTER ===== */
 .site-footer {
   background-color: #322d98;
   color: white;
