@@ -1,24 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>User Profile</title>
   <link rel="stylesheet" href="profile.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Gotu&display=swap"
-    rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="script.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Gotu&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <!-- Site Header -->
+
   <header class="site-header">
     <div class="logo">
-      <img src="C:\Users\Syrick\Desktop\TESTING\Assets\logo.png" alt="Maysan Badminton Court Logo" />
+      <img src="C:\Users\Syrick\Desktop\TESTING\Assets\logo.png" alt="Maysan Badminton Court Logo">
     </div>
-    <nav class="nav-links">
+
+    <div class="menu-toggle" id="mobile-menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+
+    <nav class="nav-links" id="nav-links">
       <a href="index.php" class="active">Home</a>
       <a href="schedule.html">Schedule</a>
       <a href="faqs.html">FAQs</a>
@@ -27,14 +30,11 @@
     </nav>
   </header>
 
-  <!-- Page Header -->
   <header class="page-header">
     <h2 class="page-title">Profile</h2>
   </header>
 
-  <!-- Main Content -->
   <div class="container">
-    <!-- Left Section -->
     <section class="left-section">
       <div class="profile-card">
         <h3 class="user-name">Mark Pabaya</h3>
@@ -46,179 +46,50 @@
         <h3>Quick Links</h3>
         <ul>
           <li>Account Settings</li>
-          <form action="logout.php" method="POST" style="margin: 0">
-            <button type="submit" class="delete"
-              style="background: none; border: none; cursor: pointer; font: inherit;">
-              Log out
-            </button>
+          <form action="logout.php" method="POST" style="margin:0;">
+            <button type="submit" class="delete" style="background:none;border:none;cursor:pointer;font:inherit;">Log out</button>
           </form>
         </ul>
       </div>
     </section>
 
-    <!-- Right Section: Booking History -->
-    <section class="right-section lg:col-span-2 w-[500px]">
-      <div class="bg-white p-6 rounded-lg shadow-lg">
-        <h2 class="text-2xl font-bold text-primary mb-4">Booking History</h2>
+    <section class="right-section">
+      <div class="booking-container">
+        <h3 class="section-title">Booking History</h3>
+        <div class="tabs">
+          <span class="active">Upcoming</span>
+          <span>Past</span>
+        </div>
+        <hr>
 
-        <!-- Tabs -->
-        <div class="border-b border-gray-200">
-          <nav id="booking-tabs" class="-mb-px flex space-x-8" aria-label="Tabs">
-            <button
-              class="tab-btn border-primary text-primary whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-              data-tab="upcoming">Upcoming</button>
-            <button
-              class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-              data-tab="past">Past</button>
-          </nav>
+        <div class="booking-card">
+          <h4>Badminton Session</h4>
+          <p>October 2, 2025 - 10:00 AM</p>
+          <p class="status">✔ Confirmed</p>
+          <div class="buttons">
+            <button class="view-btn">View Ticket</button>
+            <button class="cancel-btn">Cancel</button>
+          </div>
         </div>
 
-        <!-- Upcoming Bookings -->
-        <div id="upcoming-bookings" class="booking-tab-content mt-6 space-y-4 overflow-auto h-[400px] pr-2">
-
-          <!-- Booking 1 -->
-          <div class="border p-4 rounded-lg flex flex-col justify-between items-start gap-4">
-            <div class="flex-grow">
-              <p class="font-semibold text-lg text-accent">Pickleball Session</p>
-              <p class="text-sm text-gray-500">October 2, 2025 - 10:00 AM</p>
-              <p class="text-sm text-green-600 font-medium mt-1 inline-flex items-center">
-                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clip-rule="evenodd"></path>
-                </svg>
-                Confirmed
-              </p>
-            </div>
-            <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <button
-                class="w-32 text-center bg-secondary text-primary font-semibold text-sm py-4 px-4 rounded-lg hover:bg-opacity-80">
-                View Ticket
-              </button>
-              <button
-                class="w-32 text-center bg-red-100 text-red-700 font-semibold text-sm py-4 px-4 rounded-lg hover:bg-red-200">
-                Cancel
-              </button>
-            </div>
-          </div>
-
-          <!-- Booking 2 -->
-          <div class="border p-4 rounded-lg flex flex-col justify-between items-start gap-4">
-            <div class="flex-grow">
-              <p class="font-semibold text-lg text-accent">Badminton Practice</p>
-              <p class="text-sm text-gray-500">October 3, 2025 - 9:00 AM</p>
-              <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
-                <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                Cancelled
-              </p>
-            </div>
-            <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <button
-                class="w-32 text-center bg-secondary text-primary font-semibold text-sm py-4 px-4 rounded-lg hover:bg-opacity-80">
-                View Ticket
-              </button>
-            </div>
-          </div>
-
-          <!-- Booking 2 -->
-          <div class="border p-4 rounded-lg flex flex-col justify-between items-start gap-4">
-            <div class="flex-grow">
-              <p class="font-semibold text-lg text-accent">Badminton Practice</p>
-              <p class="text-sm text-gray-500">October 3, 2025 - 9:00 AM</p>
-              <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
-                <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                Cancelled
-              </p>
-            </div>
-            <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <button
-                class="w-32 text-center bg-secondary text-primary font-semibold text-sm py-4 px-4 rounded-lg hover:bg-opacity-80">
-                View Ticket
-              </button>
-            </div>
-          </div>
-
-          <!-- Booking 2 -->
-          <div class="border p-4 rounded-lg flex flex-col justify-between items-start gap-4">
-            <div class="flex-grow">
-              <p class="font-semibold text-lg text-accent">Badminton Practice</p>
-              <p class="text-sm text-gray-500">October 3, 2025 - 9:00 AM</p>
-              <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
-                <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                Cancelled
-              </p>
-            </div>
-            <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <button
-                class="w-32 text-center bg-secondary text-primary font-semibold text-sm py-4 px-4 rounded-lg hover:bg-opacity-80">
-                View Ticket
-              </button>
-            </div>
-          </div>
-
-          <!-- Booking 2 -->
-          <div class="border p-4 rounded-lg flex flex-col justify-between items-start gap-4">
-            <div class="flex-grow">
-              <p class="font-semibold text-lg text-accent">Badminton Practice</p>
-              <p class="text-sm text-gray-500">October 3, 2025 - 9:00 AM</p>
-              <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
-                <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round"
-                    d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                Cancelled
-              </p>
-            </div>
-            <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-              <button
-                class="w-32 text-center bg-secondary text-primary font-semibold text-sm py-4 px-4 rounded-lg hover:bg-opacity-80">
-                View Ticket
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- Past Bookings -->
-        <div id="past-bookings" class="booking-tab-content mt-6 space-y-4 hidden overflow-auto h-[400px] pr-2">
-          <div class="border p-4 rounded-lg flex flex-col justify-between items-start gap-4 bg-gray-50">
-            <div class="flex-grow">
-              <p class="font-semibold text-lg text-gray-600">Badminton Duos</p>
-              <p class="text-sm text-gray-500">September 15, 2025 - 6:00 PM</p>
-              <p class="text-sm text-gray-600 font-medium mt-1 inline-flex items-center">
-                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                  <path fill-rule="evenodd"
-                    d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z"
-                    clip-rule="evenodd"></path>
-                </svg>
-                Completed
-              </p>
-            </div>
+        <div class="booking-card">
+          <h4>Pickleball Session</h4>
+          <p>October 3, 2025 - 7:00 PM</p>
+          <p class="status">✔ Confirmed</p>
+          <div class="buttons">
+            <button class="view-btn">View Ticket</button>
+            <button class="cancel-btn">Cancel</button>
           </div>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-content">
       <div class="footer-section about">
         <h3>Maysan Badminton Court</h3>
-        <p>
-          Maysan Badminton Court is a project of Valenzuela Congressman Eric
-          Martinez.
-        </p>
+        <p>Maysan Badminton Court is a project of Valenzuela Congressman Eric Martinez</p>
       </div>
 
       <div class="footer-section links">
@@ -252,7 +123,14 @@
     </div>
   </footer>
 
-  <script src="profile_page.js"></script>
-</body>
+  <script>
+    const menu = document.getElementById('mobile-menu');
+    const navLinks = document.getElementById('nav-links');
+    menu.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      menu.classList.toggle('open');
+    });
+  </script>
 
+</body>
 </html>
