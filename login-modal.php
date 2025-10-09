@@ -48,8 +48,9 @@
 
       <div class="mt-4 text-center text-sm text-gray-600">
         Don’t have an account?
-        <a href="register.php" class="font-medium text-primary hover:text-opacity-80">Register Here</a>
+        <a href="#" id="openRegisterModal" class="font-medium text-primary hover:text-opacity-80">Register Here</a>
       </div>
     </div>
   </div>
 </div>
+<?php include 'register-modal.php'; ?>
