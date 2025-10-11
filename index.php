@@ -15,18 +15,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $response["message"] = "Invalid email format.";
   } else {
-    $stmt = $conn->prepare("SELECT user_id, pass FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT user_id, pass, name FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-      $stmt->bind_result($userId, $hashedPassword);
+      $stmt->bind_result($userId, $hashedPassword, $name);
       $stmt->fetch();
 
       if (password_verify($password, $hashedPassword)) {
         $_SESSION["user_id"] = $userId;
         $_SESSION["email"] = $email;
+        $_SESSION["name"] = $name;
 
         $response["success"] = true;
         $response["redirect"] = "landing.html";
