@@ -1,0 +1,144 @@
+<?php
+session_start();
+
+$userName = $_SESSION["name"] ?? "Guest";
+$userEmail = $_SESSION["email"] ?? "Unknown";
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Profile</title>
+  <link rel="stylesheet" href="profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Gotu&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="logo">
+      <img src="C:\Users\Syrick\Desktop\TESTING\Assets\logo.png" alt="Maysan Badminton Court Logo">
+    </div>
+
+    <div class="menu-toggle" id="mobile-menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+
+    <nav class="nav-links" id="nav-links">
+      <a href="index.php" class="active">Home</a>
+      <a href="schedule.html">Schedule</a>
+      <a href="faqs.html">FAQs</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="profile_page.html">Profile</a>
+    </nav>
+  </header>
+
+  <header class="page-header">
+    <h2 class="page-title">Profile</h2>
+  </header>
+
+  <div class="container">
+    <section class="left-section">
+      <div class="profile-card">
+        <h3 class="user-name"><?php echo htmlspecialchars($userName); ?></h3>
+        <p class="email"><?php echo htmlspecialchars($userEmail); ?></p>
+        <button class="edit-btn">Edit Profile</button>
+      </div>
+
+      <div class="quick-links">
+        <h3>Quick Links</h3>
+        <ul>
+          <li>Account Settings</li>
+          <form action="logout.php" method="POST" style="margin:0;">
+            <button type="submit" class="delete" style="background:none;border:none;cursor:pointer;font:inherit;">Log out</button>
+          </form>
+        </ul>
+      </div>
+    </section>
+
+    <section class="right-section">
+      <div class="booking-container">
+        <h3 class="section-title">Booking History</h3>
+        <div class="tabs">
+          <span class="active">Upcoming</span>
+          <span>Past</span>
+        </div>
+        <hr>
+
+        <div class="booking-card">
+          <h4>Badminton Session</h4>
+          <p>October 2, 2025 - 10:00 AM</p>
+          <p class="status">✔ Confirmed</p>
+          <div class="buttons">
+            <button class="view-btn">View Ticket</button>
+            <button class="cancel-btn">Cancel</button>
+          </div>
+        </div>
+
+        <div class="booking-card">
+          <h4>Pickleball Session</h4>
+          <p>October 3, 2025 - 7:00 PM</p>
+          <p class="status">✔ Confirmed</p>
+          <div class="buttons">
+            <button class="view-btn">View Ticket</button>
+            <button class="cancel-btn">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-section about">
+        <h3>Maysan Badminton Court</h3>
+        <p>Maysan Badminton Court is a project of Valenzuela Congressman Eric Martinez</p>
+      </div>
+
+      <div class="footer-section links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.php">Home</a></li>
+          <li><a href="schedule.html">Schedule</a></li>
+          <li><a href="faqs.html">FAQs</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section legal">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section contact">
+        <h4>Connect</h4>
+        <p>support@maysanbadmintoncourt.site</p>
+        <p>0915-865-3350</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2025 Maysan Badminton Court. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const menu = document.getElementById('mobile-menu');
+    const navLinks = document.getElementById('nav-links');
+    menu.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      menu.classList.toggle('open');
+    });
+  </script>
+
+</body>
+</html>
