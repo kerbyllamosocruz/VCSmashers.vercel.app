@@ -129,15 +129,78 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </section>
 
-  <!-- Other sections remain the same... -->
+  <section class="py-20 bg-[#DEDCFF]">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-center mb-12">How It Works</h2>
+      <div class="grid md:grid-cols-4 gap-6">
+        <!-- Step 1 -->
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+          <div class="text-primary text-4xl font-bold mb-4">1</div>
+          <i data-feather="user" class="w-12 h-12 mx-auto text-primary mb-4"></i>
+          <h3 class="text-xl font-bold mb-3">Create Account</h3>
+          <p class="text-gray-700">Sign up in seconds to get started with your booking journey.</p>
+        </div>
+        <!-- Step 2 -->
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+          <div class="text-primary text-4xl font-bold mb-4">2</div>
+          <i data-feather="calendar" class="w-12 h-12 mx-auto text-primary mb-4"></i>
+          <h3 class="text-xl font-bold mb-3">Pick Date & Time</h3>
+          <p class="text-gray-700">Select your preferred date and available time slot.</p>
+        </div>
+        <!-- Step 3 -->
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+          <div class="text-primary text-4xl font-bold mb-4">3</div>
+          <i data-feather="credit-card" class="w-12 h-12 mx-auto text-primary mb-4"></i>
+          <h3 class="text-xl font-bold mb-3">Secure Payment</h3>
+          <p class="text-gray-700">Complete your booking with our safe payment process.</p>
+        </div>
+        <!-- Step 4 -->
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+          <div class="text-primary text-4xl font-bold mb-4">4</div>
+          <i data-feather="check-circle" class="w-12 h-12 mx-auto text-primary mb-4"></i>
+          <h3 class="text-xl font-bold mb-3">Play & Enjoy</h3>
+          <p class="text-gray-700">Arrive at your scheduled time and enjoy your game!</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="py-20 bg-white">
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-center mb-12">Advantages of Playing on Our Courts</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-secondary p-6 rounded-lg shadow-lg">
+          <div class="text-primary mb-4">
+            <i data-feather="calendar" class="w-12 h-12"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Real-Time Availability</h3>
+          <p class="text-gray-700">See up-to-the-minute court availability and book instantly from any device.</p>
+        </div>
+        <div class="bg-secondary p-6 rounded-lg shadow-lg">
+          <div class="text-primary mb-4">
+            <i data-feather="clock" class="w-12 h-12"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">24/7 Access</h3>
+          <p class="text-gray-700">Book courts anytime, anywhere - no need to call during business hours.</p>
+        </div>
+        <div class="bg-secondary p-6 rounded-lg shadow-lg">
+          <div class="text-primary mb-4">
+            <i data-feather="user" class="w-12 h-12"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3">Player Profiles</h3>
+          <p class="text-gray-700">Manage your bookings, payment methods, and preferences all in one place.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Modal placeholder -->
   <div id="modal-container"></div>
-
-  <!-- Footer remains the same... -->
+  <!-- Footer Section -->
   <footer class="bg-[#232067] text-white py-12">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-4 gap-8">
+      <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
         <div>
           <h3 class="text-xl font-bold mb-4">Maysan Badminton Court</h3>
           <p class="text-secondary">Maysan Badminton Court is a project of Valenzuela Congressman Eric Martinez</p>
@@ -163,7 +226,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
         <div>
           <h4 class="text-lg font-semibold mb-4">Connect</h4>
-          <div class="flex space-x-4">
+          <div class="flex justify-center md:justify-start space-x-4">
             <a href="https://www.facebook.com/people/Valenzuela-City-Smashers/100091987359934/"
               class="text-secondary hover:text-white transition">
               <i data-feather="facebook"></i>
@@ -178,6 +241,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           </div>
         </div>
       </div>
+
       <div class="border-t border-white mt-8 pt-8 text-center text-secondary">
         <p>© 2025 Maysan Badminton Court. All rights reserved.</p>
       </div>
