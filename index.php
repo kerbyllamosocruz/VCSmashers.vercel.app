@@ -30,7 +30,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION["name"] = $name;
 
         $response["success"] = true;
-        $response["redirect"] = "landing.html";
+        // **MODIFIED: Redirect back to index.php to reflect the login state.**
+        $response["redirect"] = "index.php"; 
       } else {
         $response["message"] = "Invalid password.";
       }
@@ -50,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     exit;
   } else {
     if ($response['success']) {
-      header("Location: " . ($response['redirect'] ?? 'landing.html'));
+      header("Location: " . ($response['redirect'] ?? 'index.php'));
       exit;
     } else {
       $error = $response['message'];
@@ -79,7 +80,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 
 <body>
-  <!-- Navigation -->
   <nav class="bg-primary shadow-lg">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-20">
@@ -94,8 +94,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <a href="faqs.html" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
           <a href="contact.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
-          <button id="loginBtn"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
+          
+          <?php if (isset($_SESSION['user_id'])): ?>
+            <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
+          <?php else: ?>
+            <button id="loginBtn" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
+          <?php endif; ?>
+
         </div>
         <div class="md:hidden flex items-center">
           <button class="text-white">
@@ -106,7 +111,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </nav>
 
-  <!-- Hero Section -->
   <section class="bg-gradient-to-b from-primary to-accent text-white py-20">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="md:flex items-center justify-between">
@@ -118,8 +122,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <div class="flex space-x-4">
             <button class="bg-secondary text-primary px-6 py-3 rounded-lg font-bold hover:bg-white transition">View
               Schedule</button>
-            <button id="loginBtn2"
-              class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Login</button>
+            
+            <?php if (isset($_SESSION['user_id'])): ?>
+              <a href="profile_page.php" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Profile</a>
+            <?php else: ?>
+              <button id="loginBtn2" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Login</button>
+            <?php endif; ?>
+
           </div>
         </div>
         <div class="md:w-1/2">
@@ -133,28 +142,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center mb-12">How It Works</h2>
       <div class="grid md:grid-cols-4 gap-6">
-        <!-- Step 1 -->
         <div class="bg-white p-6 rounded-lg shadow-lg text-center">
           <div class="text-primary text-4xl font-bold mb-4">1</div>
           <i data-feather="user" class="w-12 h-12 mx-auto text-primary mb-4"></i>
           <h3 class="text-xl font-bold mb-3">Create Account</h3>
           <p class="text-gray-700">Sign up in seconds to get started with your booking journey.</p>
         </div>
-        <!-- Step 2 -->
         <div class="bg-white p-6 rounded-lg shadow-lg text-center">
           <div class="text-primary text-4xl font-bold mb-4">2</div>
           <i data-feather="calendar" class="w-12 h-12 mx-auto text-primary mb-4"></i>
           <h3 class="text-xl font-bold mb-3">Pick Date & Time</h3>
           <p class="text-gray-700">Select your preferred date and available time slot.</p>
         </div>
-        <!-- Step 3 -->
         <div class="bg-white p-6 rounded-lg shadow-lg text-center">
           <div class="text-primary text-4xl font-bold mb-4">3</div>
           <i data-feather="credit-card" class="w-12 h-12 mx-auto text-primary mb-4"></i>
           <h3 class="text-xl font-bold mb-3">Secure Payment</h3>
           <p class="text-gray-700">Complete your booking with our safe payment process.</p>
         </div>
-        <!-- Step 4 -->
         <div class="bg-white p-6 rounded-lg shadow-lg text-center">
           <div class="text-primary text-4xl font-bold mb-4">4</div>
           <i data-feather="check-circle" class="w-12 h-12 mx-auto text-primary mb-4"></i>
@@ -165,7 +170,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </section>
 
-  <!-- Features Section -->
   <section class="py-20 bg-white">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-3xl font-bold text-center mb-12">Advantages of Playing on Our Courts</h2>
@@ -195,9 +199,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </section>
 
-  <!-- Modal placeholder -->
   <div id="modal-container"></div>
-  <!-- Footer Section -->
   <footer class="bg-[#232067] text-white py-12">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
