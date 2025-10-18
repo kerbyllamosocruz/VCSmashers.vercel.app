@@ -238,7 +238,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </a>
           </div>
           <div class="mt-4">
-            <p class="text-secondary">support@maysanbadmintoncourt.site</p>
+            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">support@maysanbadmintoncourt.site</p>
             <p class="text-secondary">0915-865-3350</p>
           </div>
         </div>
