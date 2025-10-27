@@ -91,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">Home</a>
           <a href="schedule.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
-          <a href="faqs.html" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
+          <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
           <a href="contact.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           
