@@ -3,6 +3,9 @@ session_start();
 
 $userName = $_SESSION["name"] ?? "Guest";
 $userEmail = $_SESSION["email"] ?? "Unknown";
+$userPhone = $_SESSION["phone"] ?? "";
+$status = $_GET['status'] ?? '';
+$message = $_GET['message'] ?? '';
 ?>
 
 
@@ -35,10 +38,10 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
-          <a href="schedule.php"
+          <a href="schedule.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.php"
+          <a href="contact.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           
           <?php if (isset($_SESSION['user_id'])):
@@ -60,32 +63,47 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
     </div>
   </nav>
 
-  <header class="bg-gradient-to-b from-primary to-accent text-white py-8">
-    <h2 class="text-3xl font-bold text-center">Profile</h2>
+  <header class="bg-gray-100 py-8">
+    <h2 class="text-3xl font-bold text-center text-primary">Profile</h2>
   </header>
 
   <div class="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
     <section class="lg:col-span-1 flex flex-col gap-y-8">
       <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div class="w-24 h-24 mx-auto mb-3 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold text-2xl overflow-hidden">
+          <?php if (!empty($_SESSION['profile_pic'])): ?>
+            <img src="<?php echo htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Profile" class="w-full h-full object-cover">
+          <?php else: ?>
+            <?php echo strtoupper(substr($userName, 0, 1)); ?>
+          <?php endif; ?>
+        </div>
         <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($userName); ?></h3>
         <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($userEmail); ?></p>
-        <button class="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-opacity-80 transition w-full">Edit Profile</button>
+        <a href="account_settings.php" class="bg-primary text-white inline-block px-6 py-3 rounded-lg font-bold hover:bg-opacity-80 transition w-full text-center">Account Settings</a>
       </div>
 
       <div class="bg-white p-6 rounded-lg shadow-lg">
         <h3 class="text-xl font-bold mb-4 text-left">Quick Links</h3>
         <ul class="space-y-2 text-left">
-          <li><a href="#" class="text-gray-700 hover:text-primary">Account Settings</a></li>
-          <form action="logout.php" method="POST" style="margin:0;">
-            <button type="submit" class="text-red-600 hover:text-red-800 font-bold">Log out</button>
-          </form>
+          <li><a href="account_settings.php#profile" class="text-gray-700 hover:text-primary">Profile</a></li>
+          <li><a href="account_settings.php#security" class="text-gray-700 hover:text-primary">Security</a></li>
+          <li><a href="account_settings.php#preferences" class="text-gray-700 hover:text-primary">Preferences</a></li>
+          <li><a href="account_settings.php#payments" class="text-gray-700 hover:text-primary">Payments</a></li>
+          <li><a href="account_settings.php#privacy" class="text-gray-700 hover:text-primary">Privacy</a></li>
+          <li><a href="#booking-history" class="text-gray-700 hover:text-primary">Booking History</a></li>
+          <li>
+            <form action="logout.php" method="POST" style="margin:0;">
+              <button type="submit" class="text-red-600 hover:text-red-800 font-bold">Log out</button>
+            </form>
+          </li>
         </ul>
       </div>
     </section>
 
-    <!-- Right Section: Booking History -->
-    <section class="lg:col-span-2">
-      <div class="bg-white p-6 rounded-lg shadow-lg">
+    <!-- Right Section: Booking History only -->
+    <section class="lg:col-span-2 space-y-8">
+
+      <div id="booking-history" class="bg-white p-6 rounded-lg shadow-lg">
         <h2 class="text-2xl font-bold text-primary mb-4">Booking History</h2>
 
         <!-- Tabs -->
@@ -174,7 +192,7 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
     </section>
   </div>
 
-  <footer class="bg-[#232067] text-white py-12">
+<footer class="bg-[#232067] text-white py-12">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
         <div>
@@ -236,3 +254,4 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
   <script src="profile_page.js"></script>
 </body>
 </html>
+
