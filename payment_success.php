@@ -1,7 +1,8 @@
 <?php
 session_start();
+require_once "config/MongoSecretKey.php";
 
-$secretKey = getenv('PAYMONGO_SECRET');
+//$secretKey = getenv('PAYMONGO_SECRET');
 if (!$secretKey) {
     $paymentConfigPath = __DIR__ . '/config/payment.php';
     if (file_exists($paymentConfigPath)) {

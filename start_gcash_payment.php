@@ -1,8 +1,7 @@
 <?php
 header('Content-Type: application/json');
 session_start();
-
-$secretKey = 'sk_test_N2d5HBtuqrVG1UCosMqhr1vG';
+require_once "config/MongoSecretKey.php";
 
 // $secretKey = getenv('PAYMONGO_SECRET'); // USE THIS IN PRODUCTION. HARDCODED FOR TESTING ONLY.
 if (!$secretKey) {
