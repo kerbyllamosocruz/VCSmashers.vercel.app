@@ -34,9 +34,9 @@ require_once "config/config.php";
                         class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
                     <a href="schedule.php"
                         class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline">Schedule</a>
-                    <a href="faqs.html"
+                    <a href="faqs.php"
                         class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-                    <a href="contact.html"
+                    <a href="contact.php"
                         class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <a href="profile_page.php"
@@ -98,16 +98,16 @@ require_once "config/config.php";
                         <li><a href="index.php" class="text-secondary hover:text-white transition">Home</a></li>
                         <li><a href="schedule.php"
                                 class="text-secondary hover:text-white font-bold underline transition">Schedule</a></li>
-                        <li><a href="faqs.html" class="text-secondary hover:text-white transition">FAQs</a></li>
-                        <li><a href="contact.html" class="text-secondary hover:text-white transition">Contact</a></li>
+                        <li><a href="faqs.php" class="text-secondary hover:text-white transition">FAQs</a></li>
+                        <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Legal</h4>
                     <ul class="space-y-2">
-                        <li><a href="#" class="text-secondary hover:text-white transition">Terms of Service</a></li>
-                        <li><a href="#" class="text-secondary hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="#" class="text-secondary hover:text-white transition">Cookie Policy</a></li>
+                        <li><a href="terms.php" class="text-secondary hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="privacy.php" class="text-secondary hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="cookies.php" class="text-secondary hover:text-white transition">Cookie Policy</a></li>
                     </ul>
                 </div>
                 <div>

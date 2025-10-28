@@ -33,7 +33,7 @@ require_once "config/config.php";
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
-          <a href="schedule.html"
+          <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
           <a href="contact.php"
@@ -126,7 +126,7 @@ require_once "config/config.php";
             <li>
               <a href="index.php" class="text-secondary hover:text-white transition">Home</a>
             </li>
-            <li><a href="schedule.html" class="text-secondary hover:text-white transition">Schedule</a></li>
+            <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
             <li><a href="faqs.php" class="text-secondary hover:text-white transition">FAQs</a></li>
             <li><a href="contact.php" class="text-secondary hover:text-white font-bold underline transition">Contact</a></li>
           </ul>

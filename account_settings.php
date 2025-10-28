@@ -32,9 +32,9 @@ $message = $_GET['message'] ?? '';
         </div>
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
-          <a href="schedule.html" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
+          <a href="schedule.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.html" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+          <a href="contact.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">Profile</a>
         </div>
         <div class="md:hidden flex items-center">
@@ -235,19 +235,19 @@ $message = $_GET['message'] ?? '';
           <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
           <ul class="space-y-2">
             <li>
-              <a href="index.html" class="text-secondary hover:text-white font-bold underline transition">Home</a>
+              <a href="index.php" class="text-secondary hover:text-white font-bold underline transition">Home</a>
             </li>
-            <li><a href="schedule.html" class="text-secondary hover:text-white transition">Schedule</a></li>
-            <li><a href="faqs.html" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
-            <li><a href="contact.html" class="text-secondary hover:text-white transition">Contact</a></li>
+            <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
+            <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
+            <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
           </ul>
         </div>
         <div>
           <h4 class="text-lg font-semibold mb-4">Legal</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-secondary hover:text-white transition">Terms of Service</a></li>
-            <li><a href="#" class="text-secondary hover:text-white transition">Privacy Policy</a></li>
-            <li><a href="#" class="text-secondary hover:text-white transition">Cookie Policy</a></li>
+            <li><a href="terms.php" class="text-secondary hover:text-white transition">Terms of Service</a></li>
+            <li><a href="privacy.php" class="text-secondary hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="cookies.php" class="text-secondary hover:text-white transition">Cookie Policy</a></li>
           </ul>
         </div>
         <div>
