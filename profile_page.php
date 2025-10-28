@@ -86,10 +86,10 @@ if ($result->num_rows > 0) {
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
-          <a href="schedule.html"
+          <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.html"
+          <a href="contact.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           
           <?php if (isset($_SESSION['user_id'])):
@@ -200,7 +200,8 @@ if ($result->num_rows > 0) {
                     </button>
                     <?php if ($booking['status'] === 'CONFIRMED'): ?>
                       <button
-                        class="w-full sm:w-auto text-center bg-red-100 text-red-700 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-red-200">
+                        class="w-full sm:w-auto text-center bg-red-100 text-red-700 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-red-200 cancel-booking-btn"
+                        data-booking-id="<?php echo htmlspecialchars($booking['booking_id']); ?>">
                         Cancel
                       </button>
                     <?php endif; ?>
