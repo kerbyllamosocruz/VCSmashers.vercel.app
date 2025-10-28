@@ -9,9 +9,9 @@
         </button>
       </div>
 
-      <div id="registerAlert" class="hidden p-3 rounded-lg text-center text-white font-semibold"></div>
+      <p id="registerError" class="text-red-500 text-sm mb-4 text-center"></p>
 
-      <form id="registerForm" method="POST" action="register.php" class="space-y-4">
+      <form id="registerForm" method="POST" class="space-y-4">
         <div>
           <label for="regName" class="block text-sm font-medium text-gray-700">Full Name</label>
           <input type="text" id="regName" name="name" required
@@ -63,35 +63,56 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeRegisterModal = document.getElementById("closeRegisterModal");
 
   registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault(); // stop form from reloading page
-    alertBox.classList.add("hidden");
-
-    const formData = new FormData(registerForm);
+    e.preventDefault();
+    
+    const errorDiv = document.getElementById('registerError');
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    
+    // Clear previous error
+    errorDiv.textContent = '';
+    
+    // Disable button and show loading state
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Registering...';
 
     try {
+      const formData = new FormData(registerForm);
       const res = await fetch("register.php", {
         method: "POST",
-        body: formData
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
       });
       const data = await res.json();
 
-      alertBox.textContent = data.message;
-      alertBox.classList.remove("hidden");
-
       if (data.status === "success") {
-        alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-green-500";
+        // Show success in green
+        errorDiv.classList.remove('text-red-500');
+        errorDiv.classList.add('text-green-500');
+        errorDiv.textContent = data.message;
+        
+        // Clear form
+        registerForm.reset();
+        
+        // Wait briefly then switch to login modal
         setTimeout(() => {
           registerModal.classList.add("modal-hidden");
           loginModal?.classList.remove("modal-hidden");
         }, 1500);
       } else {
-        alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-red-500";
+        // Show error in red
+        errorDiv.classList.remove('text-green-500');
+        errorDiv.classList.add('text-red-500');
+        errorDiv.textContent = data.message;
       }
-
     } catch (error) {
-      alertBox.textContent = "An unexpected error occurred.";
-      alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-red-500";
-      alertBox.classList.remove("hidden");
+      errorDiv.textContent = "An unexpected error occurred. Please try again.";
+    } finally {
+      // Restore button state
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalBtnText;
     }
   });
 

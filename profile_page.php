@@ -9,20 +9,18 @@ $status = $_GET['status'] ?? '';
 $message = $_GET['message'] ?? '';
 
 $bookings = [];
-if (isset($_SESSION['user_id'])) {
-    $userId = $_SESSION['user_id'];
-    $sql = "SELECT title, event_date, event_time, status FROM bookings WHERE user_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
-    $stmt->execute();
-    $result = $stmt->get_result();
+// Only show bookings for the current user and include booking_id
+$user_id = $_SESSION['user_id'] ?? 0;
+$sql = "SELECT booking_id, title, event_date, event_time, status FROM bookings WHERE user_id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
-    if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
-            $bookings[] = $row;
-        }
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $bookings[] = $row;
     }
-    $stmt->close();
 }
 
 ?>
@@ -43,12 +41,43 @@ if (isset($_SESSION['user_id'])) {
   <script src="https://unpkg.com/feather-icons"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="icon" type="image/x-icon" href="Assets/logo.png" />
-  <script src="script.js"></script>
+    <script src="script.js"></script>
+    <style>
+    #receiptModal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+        overflow-y: auto;
+    }
+    #receiptModal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .receipt-container::before,
+    .receipt-container::after {
+        content: '';
+        display: block;
+        width: 100%;
+        height: 15px;
+        background-image: linear-gradient(to right, #a0aec0 33%, rgba(255,255,255,0) 0%);
+        background-position: bottom;
+        background-size: 6px 2px;
+        background-repeat: repeat-x;
+        position: absolute;
+        left: 0;
+    }
+    .receipt-container::before { top: -10px; }
+    .receipt-container::after { bottom: -10px; }
+    </style>
 </head>
 
-<body>
-
-  <nav class="bg-primary shadow-lg">
+<body>  <nav class="bg-primary shadow-lg">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-20">
         <div class="flex items-center">
@@ -57,10 +86,10 @@ if (isset($_SESSION['user_id'])) {
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
-          <a href="schedule.php"
+          <a href="schedule.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.php"
+          <a href="contact.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           
           <?php if (isset($_SESSION['user_id'])):
@@ -165,9 +194,9 @@ if (isset($_SESSION['user_id'])) {
                     <?php endif; ?>
                   </div>
                   <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <button
+                    <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)"
                       class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
-                      View Ticket
+                      View Receipt
                     </button>
                     <?php if ($booking['status'] === 'CONFIRMED'): ?>
                       <button
@@ -265,6 +294,185 @@ if (isset($_SESSION['user_id'])) {
     menu.addEventListener('click', () => {
       navLinks.classList.toggle('active');
       menu.classList.toggle('open');
+    });
+  </script>
+
+  <!-- Receipt Modal -->
+  <div id="receiptModal">
+    <div class="bg-gray-100 p-8 max-w-xl w-full mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-gray-800">Booking Receipt</h2>
+        <button onclick="closeReceiptModal()" class="text-gray-600 hover:text-gray-800">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div id="receipt-container" class="receipt-container relative mb-6">
+        <div id="receipt" class="bg-white text-gray-900 p-8 rounded-lg shadow-lg w-full">
+          <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-primary">Maysan Badminton Court</h1>
+            <p class="text-sm text-gray-500">OFFICIAL RECEIPT</p>
+          </div>
+
+          <div id="receiptContent">
+            <div class="h-4 bg-gray-200 rounded mb-2"></div>
+            <div class="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
+            <div class="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-4">
+        <button onclick="closeReceiptModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Close</button>
+        <button onclick="downloadReceipt()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          Download Receipt (PNG)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    let currentReceiptData = null;
+
+    function viewReceipt(bookingId) {
+      const modal = document.getElementById('receiptModal');
+      const content = document.getElementById('receiptContent');
+      
+      // Show loading state (skeleton placeholders without animation)
+      content.innerHTML = `
+        <div>
+          <div class="h-4 bg-gray-200 rounded mb-2"></div>
+          <div class="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
+          <div class="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
+        </div>
+      `;
+      
+      modal.classList.add('active');
+
+      // Fetch receipt data
+      fetch(`fetch_receipt.php?booking_id=${bookingId}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            content.innerHTML = `<p class="text-red-600">${data.error}</p>`;
+            return;
+          }
+
+          currentReceiptData = data.receipt;
+          
+          // Render receipt content
+          content.innerHTML = `
+            <div class="mb-4">
+              <div class="flex justify-between mb-1">
+                <span class="text-gray-600">Transaction ID:</span>
+                <span class="font-mono font-bold">${data.receipt.transaction_id}</span>
+              </div>
+              <div class="flex justify-between mb-1">
+                <span class="text-gray-600">Date Paid:</span>
+                <span class="font-mono font-bold">${data.receipt.date_now}</span>
+              </div>
+              <div class="flex justify-between mb-1">
+                <span class="text-gray-600">Paid By:</span>
+                <span class="font-bold">${data.receipt.customer_name}</span>
+              </div>
+            </div>
+
+            <div class="border-t border-dashed border-gray-300 my-4"></div>
+
+            <div class="mb-4">
+              <h2 class="text-lg font-semibold mb-2">Reservation Details</h2>
+              <div class="flex justify-between mb-1">
+                <span class="text-gray-600">Activity / Title:</span>
+                <span class="font-bold">${data.receipt.title}</span>
+              </div>
+              <div class="flex justify-between mb-1">
+                <span class="text-gray-600">Court:</span>
+                <span class="font-bold">Court ${data.receipt.court_number}</span>
+              </div>
+              <div class="flex justify-between mb-1">
+                <span class="text-gray-600">Date:</span>
+                <span class="font-bold">${data.receipt.event_date}</span>
+              </div>
+              <div class="flex justify-between mb-1">
+                <span class="text-gray-600">Time:</span>
+                <span class="font-bold">${data.receipt.event_time}</span>
+              </div>
+            </div>
+
+            <div class="border-t border-dashed border-gray-300 my-4"></div>
+
+            <div class="mb-6">
+              <div class="flex justify-between items-center text-xl font-bold">
+                <span>Total Paid:</span>
+                <span class="text-green-600">PHP ${data.receipt.total_fee}</span>
+              </div>
+              <div class="flex justify-between items-center mt-2">
+                <span class="text-gray-600">Payment Method:</span>
+                <span class="font-bold">Online Payment</span>
+              </div>
+            </div>
+
+            <div class="relative text-center">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-6xl font-black text-green-500 opacity-20 transform -rotate-12 select-none">
+                  ${data.receipt.status}
+                </span>
+              </div>
+              <p class="text-gray-500 italic">Thank you for your reservation!</p>
+            </div>
+          `;
+        })
+        .catch(error => {
+          content.innerHTML = `<p class="text-red-600">Error loading receipt. Please try again.</p>`;
+          console.error('Error:', error);
+        });
+    }
+
+    function closeReceiptModal() {
+      document.getElementById('receiptModal').classList.remove('active');
+    }
+
+    function downloadReceipt() {
+      if (!currentReceiptData) return;
+
+      const receiptElement = document.getElementById('receipt');
+      const downloadBtn = document.querySelector('#receiptModal button:last-child');
+      const originalText = downloadBtn.innerHTML;
+      
+      downloadBtn.innerHTML = 'Generating...';
+      downloadBtn.disabled = true;
+
+      html2canvas(receiptElement, { 
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff'
+      }).then(canvas => {
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `receipt-booking-${currentReceiptData.booking_id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        downloadBtn.innerHTML = originalText;
+        downloadBtn.disabled = false;
+      }).catch(err => {
+        console.error('Error generating receipt:', err);
+        downloadBtn.innerHTML = 'Error - Try Again';
+        downloadBtn.disabled = false;
+        setTimeout(() => downloadBtn.innerHTML = originalText, 2000);
+      });
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('receiptModal').addEventListener('click', (e) => {
+      if (e.target.id === 'receiptModal') {
+        closeReceiptModal();
+      }
     });
   </script>
 
