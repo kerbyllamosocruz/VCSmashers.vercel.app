@@ -316,7 +316,7 @@ if ($result->num_rows > 0) {
             <p class="text-sm text-gray-500">OFFICIAL RECEIPT</p>
           </div>
 
-          <div id="receiptContent" class="animate-pulse">
+          <div id="receiptContent">
             <div class="h-4 bg-gray-200 rounded mb-2"></div>
             <div class="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
             <div class="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
@@ -341,9 +341,9 @@ if ($result->num_rows > 0) {
       const modal = document.getElementById('receiptModal');
       const content = document.getElementById('receiptContent');
       
-      // Show loading state
+      // Show loading state (skeleton placeholders without animation)
       content.innerHTML = `
-        <div class="animate-pulse">
+        <div>
           <div class="h-4 bg-gray-200 rounded mb-2"></div>
           <div class="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
           <div class="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
