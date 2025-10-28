@@ -273,6 +273,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
           document.getElementById("loginModal").classList.remove("modal-hidden");
         }
+
+        // Dynamically load register.js after modals are in DOM
+        const script = document.createElement('script');
+        script.src = 'register.js';
+        document.body.appendChild(script);
       });
 
     feather.replace();

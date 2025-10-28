@@ -12,8 +12,6 @@
         </button>
       </div>
 
-      <p id="loginError" class="text-red-500 text-sm mb-4 text-center"></p>
-
       <form id="loginForm" method="POST" action="index.php" class="space-y-4">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
@@ -25,6 +23,9 @@
           <input type="password" id="password" name="password" required
             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" />
         </div>
+
+        <p id="loginError" class="text-red-500 text-sm mb-4 text-center"></p>
+
         <div class="flex items-center justify-between">
           <div class="flex items-center">
             <input id="remember-me" name="remember-me" type="checkbox"

@@ -24,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if ($check->num_rows > 0) {
         echo json_encode(["status" => "error", "message" => "Email already registered."]);
+        exit;
     } else {
         $stmt = $conn->prepare("INSERT INTO users (role_id, name, email, phone, pass) VALUES (?, ?, ?, ?, ?)");
         if ($stmt === false) {
@@ -34,8 +35,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->bind_param("issss", $role_id, $name, $email, $phone, $pass);
         if ($stmt->execute()) {
             echo json_encode(["status" => "success", "message" => "Registered successfully! Please login."]);
+            exit;
         } else {
             echo json_encode(["status" => "error", "message" => "Registration failed. Try again."]);
+            exit;
         }
         $stmt->close();
     }
