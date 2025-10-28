@@ -5,12 +5,15 @@ function initLoginModal() {
   const openRegisterLink = document.getElementById("openRegisterModal");
   const backToLoginLink = document.getElementById("backToLogin");
   const closeBtns = [document.getElementById("closeModal"), document.getElementById("closeRegisterModal")].filter(Boolean);
+  const loginForm = document.getElementById("loginForm");
+  const errorEl = document.getElementById("loginError");
+  const signInBtn = document.getElementById("signinBtn");
 
-  // Open Login
-  openLoginBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      loginModal.classList.remove("modal-hidden");
-    });
+  if (!loginModal) return;
+
+  // Open Login Modal
+  openLoginBtns.forEach((btn) => {
+    btn.addEventListener("click", () => loginModal.classList.remove("modal-hidden"));
   });
 
   // Switch to Register
@@ -18,7 +21,7 @@ function initLoginModal() {
     openRegisterLink.addEventListener("click", (e) => {
       e.preventDefault();
       loginModal.classList.add("modal-hidden");
-      registerModal.classList.remove("modal-hidden");
+      registerModal && registerModal.classList.remove("modal-hidden");
     });
   }
 
@@ -26,44 +29,66 @@ function initLoginModal() {
   if (backToLoginLink) {
     backToLoginLink.addEventListener("click", (e) => {
       e.preventDefault();
-      registerModal.classList.add("modal-hidden");
+      registerModal && registerModal.classList.add("modal-hidden");
       loginModal.classList.remove("modal-hidden");
     });
   }
 
-  
-  closeBtns.forEach(btn => {
+  // Close modals
+  closeBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       loginModal.classList.add("modal-hidden");
-      registerModal.classList.add("modal-hidden");
+      registerModal && registerModal.classList.add("modal-hidden");
     });
   });
 
-  
-  const loginForm = document.getElementById("loginForm");
-  if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(loginForm);
-      const res = await fetch("index.php", {
-        method: "POST",
-        body: formData,
-        headers: { "X-Requested-With": "XMLHttpRequest" },
-      });
-      const data = await res.json();
-
-      if (data.success) {
-        window.location.href = data.redirect || "index.php";
-      } else {
-        document.getElementById("loginError").textContent = data.message;
-      }
+  // Close modal by clicking outside
+  loginModal.addEventListener("click", (e) => {
+    if (e.target === loginModal) loginModal.classList.add("modal-hidden");
+  });
+  if (registerModal) {
+    registerModal.addEventListener("click", (e) => {
+      if (e.target === registerModal) registerModal.classList.add("modal-hidden");
     });
   }
 
-  
-  const registerForm = document.getElementById("registerForm");
-  if (registerForm) {
-    // Register form submission handled inside register-modal.php inline script
+  // Login form submission
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (errorEl) errorEl.textContent = "";
+
+      if (signInBtn) signInBtn.disabled = true;
+
+      try {
+        const formData = new FormData(loginForm);
+        const res = await fetch("index.php", {
+          method: "POST",
+          headers: { "X-Requested-With": "XMLHttpRequest" },
+          body: formData,
+        });
+
+        const contentType = res.headers.get("content-type") || "";
+
+        if (res.ok && contentType.includes("application/json")) {
+          const data = await res.json();
+          if (data.success) {
+            window.location.href = data.redirect ?? "landing.html";
+          } else {
+            errorEl.textContent = data.message || "Invalid credentials";
+          }
+        } else {
+          const text = await res.text();
+          console.error("Unexpected login response:", res.status, text);
+          errorEl.textContent = "Server error — check console (see network tab).";
+        }
+      } catch (err) {
+        console.error("Login fetch error:", err);
+        errorEl.textContent = "Network error. Try again.";
+      } finally {
+        if (signInBtn) signInBtn.disabled = false;
+      }
+    });
   }
 }
 
@@ -71,39 +96,61 @@ function initRegisterForm() {
   const registerModal = document.getElementById("registerModal");
   const loginModal = document.getElementById("loginModal");
   const registerForm = document.getElementById("registerForm");
-  const alertBox = document.getElementById("registerAlert");
+  const errorEl = document.getElementById("registerError");
+  const submitBtn = registerForm?.querySelector('button[type="submit"]');
 
-  if (!registerForm || !alertBox) return;
+  if (!registerForm || !errorEl) return;
 
-  // Avoid double-binding
   if (registerForm.__bound) return;
   registerForm.__bound = true;
 
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    alertBox.classList.add("hidden");
+    errorEl.textContent = "";
+    
+    if (submitBtn) submitBtn.disabled = true;
 
-    const formData = new FormData(registerForm);
     try {
-      const res = await fetch("register.php", { method: "POST", body: formData });
-      const data = await res.json();
+      const formData = new FormData(registerForm);
+      const res = await fetch("register.php", {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest" },
+        body: formData
+      });
 
-      alertBox.textContent = data.message || "Registration failed.";
-      alertBox.classList.remove("hidden");
-
-      if (data.status === "success") {
-        alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-green-500";
-        setTimeout(() => {
-          registerModal && registerModal.classList.add("modal-hidden");
-          loginModal && loginModal.classList.remove("modal-hidden");
-        }, 1500);
+      const contentType = res.headers.get("content-type") || "";
+      
+      if (res.ok && contentType.includes("application/json")) {
+        const data = await res.json();
+        if (data.status === "success") {
+          errorEl.textContent = data.message || "Registration successful!";
+          errorEl.className = "text-green-500 text-sm mb-4 text-center";
+          setTimeout(() => {
+            registerModal?.classList.add("modal-hidden");
+            loginModal?.classList.remove("modal-hidden");
+          }, 1500);
+        } else {
+          errorEl.textContent = data.message || "Registration failed";
+          errorEl.className = "text-red-500 text-sm mb-4 text-center";
+        }
       } else {
-        alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-red-500";
+        const text = await res.text();
+        console.error("Unexpected register response:", res.status, text);
+        errorEl.textContent = "Server error — check console";
+        errorEl.className = "text-red-500 text-sm mb-4 text-center";
       }
     } catch (err) {
-      alertBox.textContent = "An unexpected error occurred.";
-      alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-red-500";
-      alertBox.classList.remove("hidden");
+      console.error("Register fetch error:", err);
+      errorEl.textContent = "Network error. Try again.";
+      errorEl.className = "text-red-500 text-sm mb-4 text-center";
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }
+
+// Initialize both forms when the DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  initLoginModal();
+  initRegisterForm();
+});
