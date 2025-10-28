@@ -221,9 +221,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div>
           <h4 class="text-lg font-semibold mb-4">Legal</h4>
           <ul class="space-y-2">
-            <li><a href="#" class="text-secondary hover:text-white transition">Terms of Service</a></li>
-            <li><a href="#" class="text-secondary hover:text-white transition">Privacy Policy</a></li>
-            <li><a href="#" class="text-secondary hover:text-white transition">Cookie Policy</a></li>
+            <li><a href="terms.php" class="text-secondary hover:text-white transition">Terms of Service</a></li>
+            <li><a href="privacy.php" class="text-secondary hover:text-white transition">Privacy Policy</a></li>
+            <li><a href="cookies.php" class="text-secondary hover:text-white transition">Cookie Policy</a></li>
           </ul>
         </div>
         <div>
