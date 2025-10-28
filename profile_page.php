@@ -9,13 +9,20 @@ $status = $_GET['status'] ?? '';
 $message = $_GET['message'] ?? '';
 
 $bookings = [];
-$sql = "SELECT title, event_date, event_time, status FROM bookings";
-$result = $conn->query($sql);
+if (isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+    $sql = "SELECT title, event_date, event_time, status FROM bookings WHERE user_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $bookings[] = $row;
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $bookings[] = $row;
+        }
     }
+    $stmt->close();
 }
 
 ?>
