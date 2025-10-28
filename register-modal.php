@@ -1,91 +1,106 @@
-<?php
-// This file only contains the modal HTML
-?>
-<!-- Registration Modal -->
 <div id="registerModal"
   class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 modal modal-hidden">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 p-10">
-    <div class="flex justify-center items-center mb-4 relative">
-      <h2 class="text-3xl font-bold text-primary text-center">Create Account</h2>
-      <button id="closeRegisterModal" class="absolute right-0 text-gray-500 hover:text-gray-700">
-        <i data-feather="x"></i>
-      </button>
+  <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+    <div class="p-6">
+      <div class="flex justify-center items-center mb-4 relative">
+        <h3 class="text-2xl font-bold text-primary text-center">Register</h3>
+        <button id="closeRegisterModal" class="absolute right-0 text-gray-500 hover:text-gray-700">
+          <i data-feather="x"></i>
+        </button>
+      </div>
+
+      <div id="registerAlert" class="hidden p-3 rounded-lg text-center text-white font-semibold"></div>
+
+      <form id="registerForm" method="POST" action="register.php" class="space-y-4">
+        <div>
+          <label for="regName" class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input type="text" id="regName" name="name" required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+        </div>
+
+        <div>
+          <label for="regEmail" class="block text-sm font-medium text-gray-700">Email Address</label>
+          <input type="email" id="regEmail" name="email" required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+        </div>
+
+        <div>
+          <label for="regPhone" class="block text-sm font-medium text-gray-700">Phone (optional)</label>
+          <input type="tel" id="regPhone" name="phone"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+        </div>
+
+        <div>
+          <label for="regPassword" class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" id="regPassword" name="pass" required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+        </div>
+
+        <div>
+          <button type="submit"
+            class="w-full py-2 px-4 bg-primary text-white font-bold rounded-md hover:bg-opacity-90 transition">
+            Register
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-4 text-center text-sm text-gray-600">
+        Already have an account?
+        <a href="#" id="backToLogin" class="font-medium text-primary hover:text-opacity-80">Back to Login</a>
+      </div>
     </div>
-
-    <form action="register.php" method="POST" class="space-y-5">
-      <!-- Full Name -->
-      <div>
-        <label for="name" class="block text-sm font-semibold text-gray-700">Full Name</label>
-        <input type="text" name="name" id="name" placeholder="John Doe"
-          class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-          required />
-      </div>
-
-      <!-- Email -->
-      <div>
-        <label for="email" class="block text-sm font-semibold text-gray-700">Email</label>
-        <input type="email" name="email" id="email" placeholder="example@email.com"
-          class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-          required />
-      </div>
-
-      <!-- Phone -->
-      <div>
-        <label for="phone" class="block text-sm font-semibold text-gray-700">Phone</label>
-        <input type="tel" name="phone" id="phone" placeholder="09123456789" pattern="[0-9]{11}" maxlength="11"
-          class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-          required />
-      </div>
-
-      <!-- Password -->
-      <div>
-        <label for="pass" class="block text-sm font-semibold text-gray-700">Password</label>
-        <input type="password" name="pass" id="pass" placeholder="********"
-          class="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none"
-          required minlength="6" />
-      </div>
-
-      <!-- Submit Button -->
-      <button type="submit"
-        class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-accent transition">
-        Register
-      </button>
-    </form>
-
-    <p class="text-center text-sm text-gray-600 mt-6">
-      Already have an account?
-      <a href="#" id="openLoginFromRegister" class="text-primary font-semibold hover:underline">Login here</a>
-    </p>
   </div>
 </div>
+
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const loginModal = document.getElementById("loginModal");
   const registerModal = document.getElementById("registerModal");
-  const openRegisterModal = document.getElementById("openRegisterModal");
-  const openLoginFromRegister = document.getElementById("openLoginFromRegister");
-
-  if (openRegisterModal) {
-    openRegisterModal.addEventListener("click", (e) => {
-      e.preventDefault();
-      loginModal?.classList.add("modal-hidden");
-      registerModal?.classList.remove("modal-hidden");
-    });
-  }
-
-  if (openLoginFromRegister) {
-    openLoginFromRegister.addEventListener("click", (e) => {
-      e.preventDefault();
-      registerModal?.classList.add("modal-hidden");
-      loginModal?.classList.remove("modal-hidden");
-    });
-  }
+  const loginModal = document.getElementById("loginModal");
+  const registerForm = document.getElementById("registerForm");
+  const alertBox = document.getElementById("registerAlert");
+  const backToLogin = document.getElementById("backToLogin");
   const closeRegisterModal = document.getElementById("closeRegisterModal");
-if (closeRegisterModal) {
-  closeRegisterModal.addEventListener("click", () => {
-    registerModal.classList.add("modal-hidden");
-  });
-}
-});
 
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault(); // stop form from reloading page
+    alertBox.classList.add("hidden");
+
+    const formData = new FormData(registerForm);
+
+    try {
+      const res = await fetch("register.php", {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+
+      alertBox.textContent = data.message;
+      alertBox.classList.remove("hidden");
+
+      if (data.status === "success") {
+        alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-green-500";
+        setTimeout(() => {
+          registerModal.classList.add("modal-hidden");
+          loginModal?.classList.remove("modal-hidden");
+        }, 1500);
+      } else {
+        alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-red-500";
+      }
+
+    } catch (error) {
+      alertBox.textContent = "An unexpected error occurred.";
+      alertBox.className = "p-3 rounded-lg text-center text-white font-semibold bg-red-500";
+      alertBox.classList.remove("hidden");
+    }
+  });
+
+  if (closeRegisterModal) {
+    closeRegisterModal.addEventListener("click", () => {
+      registerModal.classList.add("modal-hidden");
+    });
+  }
+
+  // Back-to-login is handled globally in login.js to avoid duplicate bindings
+});
 </script>

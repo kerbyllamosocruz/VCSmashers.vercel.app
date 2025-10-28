@@ -9,13 +9,12 @@ require_once "config/config.php";
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contact Us - Maysan Badminton Court</title>
+  <title>Cookie Policy - Maysan Badminton Court</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Gotu&family=Montserrat:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="contact.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/feather-icons"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -33,17 +32,20 @@ require_once "config/config.php";
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
-          <a href="schedule.html"
+          <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
           <a href="contact.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">Contact Us</a>
+            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           
-          <?php if (isset($_SESSION['user_id'])): ?>
+          <?php if (isset($_SESSION['user_id'])):
+            ?>
             <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
-          <?php else: ?>
+          <?php else:
+            ?>
             <button id="loginBtn" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
-          <?php endif; ?>
+          <?php endif;
+          ?>
 
         </div>
         <div class="md:hidden flex items-center">
@@ -57,56 +59,31 @@ require_once "config/config.php";
 
   <section class="bg-gradient-to-b from-primary to-accent text-white py-20">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
-      <p class="text-[18px] mb-8 font-gotu">We'd love to hear from you. Send us a message and we'll get back to you as soon as possible.</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6">Cookie Policy</h1>
     </div>
   </section>
 
   <section class="py-20 bg-[#DEDCFF]">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid md:grid-cols-2 gap-12">
-        <div class="bg-white p-8 rounded-lg shadow-lg">
-          <h2 class="text-2xl font-bold mb-6">Send us a message</h2>
-          <form id="contactForm">
-            <div class="mb-4">
-              <label for="name" class="block text-gray-700 font-bold mb-2">Name</label>
-              <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-            </div>
-            <div class="mb-4">
-              <label for="email" class="block text-gray-700 font-bold mb-2">Email</label>
-              <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
-            </div>
-            <div class="mb-4">
-              <label for="message" class="block text-gray-700 font-bold mb-2">Message</label>
-              <textarea id="message" name="message" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required></textarea>
-            </div>
-            <button type="submit" class="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-accent transition">Send Message</button>
-          </form>
-          <div id="form-status" class="mt-4"></div>
-        </div>
-        <div class="bg-white p-8 rounded-lg shadow-lg">
-          <h2 class="text-2xl font-bold mb-6">Contact Information</h2>
-          <div class="flex items-center mb-4">
-            <i data-feather="map-pin" class="w-6 h-6 text-primary mr-4"></i>
-            <p class="text-gray-700">Maysan, Valenzuela City, Philippines</p>
-          </div>
-          <div class="flex items-center mb-4">
-            <i data-feather="phone" class="w-6 h-6 text-primary mr-4"></i>
-            <p class="text-gray-700">0915-865-3350</p>
-          </div>
-          <div class="flex items-center mb-4">
-            <i data-feather="mail" class="w-6 h-6 text-primary mr-4"></i>
-            <p class="text-gray-700">support@maysanbadmintoncourt.site</p>
-          </div>
-          <h3 class="text-xl font-bold mt-8 mb-4">Follow Us</h3>
-          <div class="flex space-x-4">
-            <a href="https://www.facebook.com/people/Valenzuela-City-Smashers/100091987359934/" class="text-primary hover:text-accent transition">
-              <i data-feather="facebook" class="w-8 h-8"></i>
-            </a>
-            <a href="#" class="text-primary hover:text-accent transition">
-                <i class="fa-brands fa-whatsapp fa-2x"></i>
-            </a>
-          </div>
+      <div class="bg-white p-8 rounded-lg shadow-lg">
+        <div class="prose max-w-none">
+          <h2 class="text-2xl font-bold text-primary mb-4">1. What Are Cookies</h2>
+          <p class="mb-4">As is common practice with almost all professional websites, this site uses cookies, which are tiny files that are downloaded to your computer, to improve your experience. This page describes what information they gather, how we use it and why we sometimes need to store these cookies. We will also share how you can prevent these cookies from being stored however this may downgrade or 'break' certain elements of the sites functionality.</p>
+
+          <h2 class="text-2xl font-bold text-primary mb-4">2. How We Use Cookies</h2>
+          <p class="mb-4">We use cookies for a variety of reasons detailed below. Unfortunately in most cases there are no industry standard options for disabling cookies without completely disabling the functionality and features they add to this site. It is recommended that you leave on all cookies if you are not sure whether you need them or not in case they are used to provide a service that you use.</p>
+
+          <h2 class="text-2xl font-bold text-primary mb-4">3. Disabling Cookies</h2>
+          <p class="mb-4">You can prevent the setting of cookies by adjusting the settings on your browser (see your browser Help for how to do this). Be aware that disabling cookies will affect the functionality of this and many other websites that you visit. Disabling cookies will usually result in also disabling certain functionality and features of the this site. Therefore it is recommended that you do not disable cookies.</p>
+
+          <h2 class="text-2xl font-bold text-primary mb-4">4. The Cookies We Set</h2>
+          <ul class="list-disc list-inside mb-4">
+            <li class="mb-2"><strong>Account related cookies:</strong> If you create an account with us then we will use cookies for the management of the signup process and general administration. These cookies will usually be deleted when you log out however in some cases they may remain afterwards to remember your site preferences when logged out.</li>
+            <li class="mb-2"><strong>Login related cookies:</strong> We use cookies when you are logged in so that we can remember this fact. This prevents you from having to log in every single time you visit a new page. These cookies are typically removed or cleared when you log out to ensure that you can only access restricted features and areas when logged in.</li>
+          </ul>
+
+          <h2 class="text-2xl font-bold text-primary mb-4">5. More Information</h2>
+          <p class="mb-4">Hopefully that has clarified things for you and as was previously mentioned if there is something that you aren't sure whether you need or not it's usually safer to leave cookies enabled in case it does interact with one of the features you use on our site.</p>
         </div>
       </div>
     </div>
@@ -126,9 +103,9 @@ require_once "config/config.php";
             <li>
               <a href="index.php" class="text-secondary hover:text-white transition">Home</a>
             </li>
-            <li><a href="schedule.html" class="text-secondary hover:text-white transition">Schedule</a></li>
+            <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
             <li><a href="faqs.php" class="text-secondary hover:text-white transition">FAQs</a></li>
-            <li><a href="contact.php" class="text-secondary hover:text-white font-bold underline transition">Contact</a></li>
+            <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
           </ul>
         </div>
         <div>
@@ -165,7 +142,6 @@ require_once "config/config.php";
   <script>
     feather.replace();
   </script>
-  <script src="contact.js"></script>
 </body>
 
 </html>
