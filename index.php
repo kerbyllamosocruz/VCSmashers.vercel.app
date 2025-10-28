@@ -30,8 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $_SESSION["name"] = $name;
 
         $response["success"] = true;
-        // **MODIFIED: Redirect back to index.php to reflect the login state.**
-        $response["redirect"] = "index.php"; 
+        $response["redirect"] = "index.php";
       } else {
         $response["message"] = "Invalid password.";
       }
@@ -80,7 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 
 <body>
-  <nav class="bg-primary shadow-lg">
+  <nav class="bg-primary shadow-lg w-full">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-20">
         <div class="flex items-center">
@@ -89,12 +88,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">Home</a>
-          <a href="schedule.html"
+          <a href="schedule.php"
+            <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
           <a href="contact.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
-          
+
           <?php if (isset($_SESSION['user_id'])): ?>
             <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
           <?php else: ?>
@@ -122,11 +122,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <div class="flex space-x-4">
             <button class="bg-secondary text-primary px-6 py-3 rounded-lg font-bold hover:bg-white transition">View
               Schedule</button>
-            
+
             <?php if (isset($_SESSION['user_id'])): ?>
               <a href="profile_page.php" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Profile</a>
             <?php else: ?>
-              <button id="loginBtn2" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Login</button>
+              <button id="loginBtn2" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Book Now</button>
             <?php endif; ?>
 
           </div>
@@ -214,8 +214,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
               <a href="index.php" class="text-secondary hover:text-white font-bold underline transition">Home</a>
             </li>
             <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
-            <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
-            <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
+              <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
+              <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
+              <li><a href="faqs.html" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
+              <li><a href="contact.html" class="text-secondary hover:text-white transition">Contact</a></li>
           </ul>
         </div>
         <div>

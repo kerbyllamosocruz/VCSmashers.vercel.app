@@ -1,5 +1,4 @@
 <?php
-// This file only contains the modal HTML
 ?>
 
 <div id="loginModal"
@@ -13,10 +12,8 @@
         </button>
       </div>
 
-      <!-- Always present error placeholder -->
       <p id="loginError" class="text-red-500 text-sm mb-4 text-center"></p>
 
-      <!-- NOTE: keep action as fallback; JS will intercept submit -->
       <form id="loginForm" method="POST" action="index.php" class="space-y-4">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
