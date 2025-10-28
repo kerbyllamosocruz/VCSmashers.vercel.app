@@ -1,51 +1,41 @@
-
 <?php
-// register.php
+header('Content-Type: application/json');
+require_once __DIR__ . '/config/config.php';
 
-// Database connection settings
-$host = "localhost";       // or 127.0.0.1
-$user = "root";            // your MySQL username
-$pass = "";                // your MySQL password
-$db   = "VC_Smashers_CourtHubDB"; // your database name
-
-$conn = new mysqli($host, $user, $pass, $db);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name  = trim($_POST["name"]);
-    $email = trim($_POST["email"]);
-    $phone = trim($_POST["phone"]);
-    $password_raw = $_POST["pass"];
-    $pass  = password_hash($password_raw, PASSWORD_DEFAULT); // hashed password
+    $name  = isset($_POST["name"]) ? trim($_POST["name"]) : '';
+    $email = isset($_POST["email"]) ? trim($_POST["email"]) : '';
+    $phone = isset($_POST["phone"]) ? trim($_POST["phone"]) : '';
+    $password_raw = isset($_POST["pass"]) ? $_POST["pass"] : (isset($_POST["password"]) ? $_POST["password"] : '');
 
-    // Default role_id = 2 (USER)
+    if ($name === '' || $email === '' || $password_raw === '') {
+        echo json_encode(["status" => "error", "message" => "Name, email, and password are required."]);
+        exit;
+    }
+
+    $pass  = password_hash($password_raw, PASSWORD_DEFAULT);
     $role_id = 2;
 
-    // Check if email already exists
+    // Check existing email
     $check = $conn->prepare("SELECT email FROM users WHERE email = ?");
     $check->bind_param("s", $email);
     $check->execute();
     $check->store_result();
 
     if ($check->num_rows > 0) {
-        echo "Email already registered!";
+        echo json_encode(["status" => "error", "message" => "Email already registered."]);
     } else {
         $stmt = $conn->prepare("INSERT INTO users (role_id, name, email, phone, pass) VALUES (?, ?, ?, ?, ?)");
         if ($stmt === false) {
-            die("Prepare failed: " . $conn->error);
+            echo json_encode(["status" => "error", "message" => "Database error: " . $conn->error]);
+            exit;
         }
 
         $stmt->bind_param("issss", $role_id, $name, $email, $phone, $pass);
-
         if ($stmt->execute()) {
-            echo "Registration successful! <a href='login.html'>Login Here</a>";
+            echo json_encode(["status" => "success", "message" => "Registered successfully! Please login."]);
         } else {
-            echo "Error: " . $stmt->error;
+            echo json_encode(["status" => "error", "message" => "Registration failed. Try again."]);
         }
         $stmt->close();
     }
