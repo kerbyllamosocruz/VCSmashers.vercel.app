@@ -35,10 +35,10 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
-          <a href="schedule.html"
+          <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.html"
+          <a href="contact.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           
           <?php if (isset($_SESSION['user_id'])):
@@ -60,8 +60,8 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
     </div>
   </nav>
 
-  <header class="bg-gray-100 py-8">
-    <h2 class="text-3xl font-bold text-center text-primary">Profile</h2>
+  <header class="bg-gradient-to-b from-primary to-accent text-white py-8">
+    <h2 class="text-3xl font-bold text-center">Profile</h2>
   </header>
 
   <div class="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -185,11 +185,11 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
           <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
           <ul class="space-y-2">
             <li>
-              <a href="index.html" class="text-secondary hover:text-white font-bold underline transition">Home</a>
+              <a href="index.php" class="text-secondary hover:text-white font-bold transition">Home</a>
             </li>
-            <li><a href="schedule.html" class="text-secondary hover:text-white transition">Schedule</a></li>
-            <li><a href="faqs.html" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
-            <li><a href="contact.html" class="text-secondary hover:text-white transition">Contact</a></li>
+            <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
+            <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
+            <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
           </ul>
         </div>
         <div>

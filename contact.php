@@ -1,18 +1,6 @@
 <?php
 session_start();
 require_once "config/config.php";
-
-$faqs = [];
-$sql = "SELECT question, answer FROM faqs";
-$result = $conn->query($sql);
-
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $faqs[] = $row;
-    }
-}
-
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -21,12 +9,13 @@ $conn->close();
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Maysan Badminton Court - FAQs</title>
+  <title>Contact Us - Maysan Badminton Court</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Gotu&family=Montserrat:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="contact.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/feather-icons"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
@@ -46,18 +35,15 @@ $conn->close();
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
           <a href="schedule.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
-          <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">FAQs</a>
+          <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
           <a href="contact.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">Contact Us</a>
           
-          <?php if (isset($_SESSION['user_id'])):
-            ?>
+          <?php if (isset($_SESSION['user_id'])): ?>
             <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
-          <?php else:
-            ?>
+          <?php else: ?>
             <button id="loginBtn" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
-          <?php endif;
-          ?>
+          <?php endif; ?>
 
         </div>
         <div class="md:hidden flex items-center">
@@ -71,27 +57,57 @@ $conn->close();
 
   <section class="bg-gradient-to-b from-primary to-accent text-white py-20">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl md:text-5xl font-bold mb-6">Frequently Asked Questions</h1>
-      <p class="text-[18px] mb-8 font-gotu">Find answers to common questions about our court, bookings, and amenities.</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
+      <p class="text-[18px] mb-8 font-gotu">We'd love to hear from you. Send us a message and we'll get back to you as soon as possible.</p>
     </div>
   </section>
 
   <section class="py-20 bg-[#DEDCFF]">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="space-y-4">
-
-        <?php foreach ($faqs as $faq): ?>
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-          <button class="w-full text-left flex justify-between items-center accordion-button">
-            <h3 class="text-xl font-bold text-black"><?php echo htmlspecialchars($faq['question']); ?></h3>
-            <i data-feather="chevron-down" class="transition-transform duration-300 text-primary"></i>
-          </button>
-          <div class="mt-4 hidden accordion-content">
-            <p class="text-gray-700"><?php echo htmlspecialchars($faq['answer']); ?></p>
+    <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-2 gap-12">
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+          <h2 class="text-2xl font-bold mb-6">Send us a message</h2>
+          <form id="contactForm">
+            <div class="mb-4">
+              <label for="name" class="block text-gray-700 font-bold mb-2">Name</label>
+              <input type="text" id="name" name="name" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+            </div>
+            <div class="mb-4">
+              <label for="email" class="block text-gray-700 font-bold mb-2">Email</label>
+              <input type="email" id="email" name="email" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required>
+            </div>
+            <div class="mb-4">
+              <label for="message" class="block text-gray-700 font-bold mb-2">Message</label>
+              <textarea id="message" name="message" rows="5" class="w-full px-3 py-2 border border-gray-300 rounded-lg" required></textarea>
+            </div>
+            <button type="submit" class="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-accent transition">Send Message</button>
+          </form>
+          <div id="form-status" class="mt-4"></div>
+        </div>
+        <div class="bg-white p-8 rounded-lg shadow-lg">
+          <h2 class="text-2xl font-bold mb-6">Contact Information</h2>
+          <div class="flex items-center mb-4">
+            <i data-feather="map-pin" class="w-6 h-6 text-primary mr-4"></i>
+            <p class="text-gray-700">Maysan, Valenzuela City, Philippines</p>
+          </div>
+          <div class="flex items-center mb-4">
+            <i data-feather="phone" class="w-6 h-6 text-primary mr-4"></i>
+            <p class="text-gray-700">0915-865-3350</p>
+          </div>
+          <div class="flex items-center mb-4">
+            <i data-feather="mail" class="w-6 h-6 text-primary mr-4"></i>
+            <p class="text-gray-700">support@maysanbadmintoncourt.site</p>
+          </div>
+          <h3 class="text-xl font-bold mt-8 mb-4">Follow Us</h3>
+          <div class="flex space-x-4">
+            <a href="https://www.facebook.com/people/Valenzuela-City-Smashers/100091987359934/" class="text-primary hover:text-accent transition">
+              <i data-feather="facebook" class="w-8 h-8"></i>
+            </a>
+            <a href="#" class="text-primary hover:text-accent transition">
+                <i class="fa-brands fa-whatsapp fa-2x"></i>
+            </a>
           </div>
         </div>
-        <?php endforeach; ?>
-
       </div>
     </div>
   </section>
@@ -108,11 +124,11 @@ $conn->close();
           <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
           <ul class="space-y-2">
             <li>
-              <a href="index.php" class="text-secondary hover:text-white font-bold transition">Home</a>
+              <a href="index.php" class="text-secondary hover:text-white transition">Home</a>
             </li>
-            <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
-            <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold underline">FAQs</a></li>
-            <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
+            <li><a href="schedule.html" class="text-secondary hover:text-white transition">Schedule</a></li>
+            <li><a href="faqs.php" class="text-secondary hover:text-white transition">FAQs</a></li>
+            <li><a href="contact.php" class="text-secondary hover:text-white font-bold underline transition">Contact</a></li>
           </ul>
         </div>
         <div>
@@ -146,7 +162,10 @@ $conn->close();
       </div>
     </div>
   </footer>
-  <script src="./faqs.js"></script>
+  <script>
+    feather.replace();
+  </script>
+  <script src="contact.js"></script>
 </body>
 
 </html>

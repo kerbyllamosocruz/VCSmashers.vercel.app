@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <a href="schedule.html"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.html"
+          <a href="contact.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
           
           <?php if (isset($_SESSION['user_id'])): ?>
@@ -211,11 +211,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
           <ul class="space-y-2">
             <li>
-              <a href="index.html" class="text-secondary hover:text-white font-bold underline transition">Home</a>
+              <a href="index.php" class="text-secondary hover:text-white font-bold underline transition">Home</a>
             </li>
-            <li><a href="schedule.html" class="text-secondary hover:text-white transition">Schedule</a></li>
-            <li><a href="faqs.html" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
-            <li><a href="contact.html" class="text-secondary hover:text-white transition">Contact</a></li>
+            <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
+            <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
+            <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
           </ul>
         </div>
         <div>
