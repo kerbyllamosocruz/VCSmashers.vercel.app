@@ -15,19 +15,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $response["message"] = "Invalid email format.";
   } else {
-    $stmt = $conn->prepare("SELECT user_id, pass, name FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT user_id, pass, name, phone, profile_pic FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-      $stmt->bind_result($userId, $hashedPassword, $name);
+      $stmt->bind_result($userId, $hashedPassword, $name, $phone, $profilePic);
       $stmt->fetch();
 
       if (password_verify($password, $hashedPassword)) {
         $_SESSION["user_id"] = $userId;
         $_SESSION["email"] = $email;
         $_SESSION["name"] = $name;
+        if (!empty($phone)) {
+          $_SESSION["phone"] = $phone;
+        }
+        if (!empty($profilePic)) {
+          $_SESSION["profile_pic"] = $profilePic;
+        } else {
+          unset($_SESSION["profile_pic"]);
+        }
 
         $response["success"] = true;
         // **MODIFIED: Redirect back to index.php to reflect the login state.**
