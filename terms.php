@@ -31,7 +31,7 @@ require_once "config/config.php";
             <img src="Assets/logo.png" alt="Maysan Badminton Court Logo" class="h-10" />
           </a>
         </div>
-        <div class="hidden md:flex items-center space-x-8">
+        <div class="hidden md:flex items-center space-x-8" id="nav-links">
           <a href="index.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
           <a href="schedule.php"
@@ -51,10 +51,27 @@ require_once "config/config.php";
 
         </div>
         <div class="md:hidden flex items-center">
-          <button class="text-white">
+          <button class="text-white" id="mobile-menu-button">
             <i data-feather="menu"></i>
           </button>
         </div>
+      </div>
+    </div>
+    <!-- Mobile menu, show/hide based on menu state. -->
+    <div class="md:hidden hidden" id="mobile-menu">
+      <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
+        <a href="index.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
+        <a href="schedule.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
+        <a href="faqs.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
+        <a href="contact.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+        <?php if (isset($_SESSION['user_id'])):
+          ?>
+          <a href="profile_page.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Profile</a>
+        <?php else:
+          ?>
+          <button id="loginBtnMobile" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
+        <?php endif;
+        ?>
       </div>
     </div>
   </nav>
@@ -142,6 +159,13 @@ require_once "config/config.php";
     </div>
   </footer>
   <script>
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
     feather.replace();
   </script>
 </body>
