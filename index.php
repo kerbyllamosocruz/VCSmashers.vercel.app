@@ -25,9 +25,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       $stmt->fetch();
 
       if (password_verify($password, $hashedPassword)) {
+        // Fetch role_id
+        $role_stmt = $conn->prepare("SELECT role_id FROM users WHERE user_id = ?");
+        $role_stmt->bind_param("i", $userId);
+        $role_stmt->execute();
+        $role_stmt->bind_result($roleId);
+        $role_stmt->fetch();
+        $role_stmt->close();
+
         $_SESSION["user_id"] = $userId;
         $_SESSION["email"] = $email;
         $_SESSION["name"] = $name;
+        $_SESSION["role_id"] = $roleId;
         if (!empty($phone)) {
           $_SESSION["phone"] = $phone;
         }
@@ -38,6 +47,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         $response["success"] = true;
+        
+        if ($roleId == 1) {
+            $_SESSION["admin_logged_in"] = true;
+        }
+
         $response["redirect"] = "index.php";
       } else {
         $response["message"] = "Invalid password.";

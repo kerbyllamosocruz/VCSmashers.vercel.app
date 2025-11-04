@@ -133,6 +133,9 @@ if ($result->num_rows > 0) {
       <div class="bg-white p-6 rounded-lg shadow-lg">
         <h3 class="text-xl font-bold mb-4 text-left">Quick Links</h3>
         <ul class="space-y-2 text-left">
+          <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
+          <li><a href="admin/dashboard.php" class="text-gray-700 hover:text-primary">Admin Dashboard</a></li>
+          <?php endif; ?>
           <li><a href="account_settings.php#profile" class="text-gray-700 hover:text-primary">Profile</a></li>
           <li><a href="account_settings.php#security" class="text-gray-700 hover:text-primary">Security</a></li>
           <li><a href="account_settings.php#preferences" class="text-gray-700 hover:text-primary">Preferences</a></li>
