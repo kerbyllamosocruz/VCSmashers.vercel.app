@@ -47,9 +47,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         $response["success"] = true;
-        
+
         if ($roleId == 1) {
-            $_SESSION["admin_logged_in"] = true;
+          $_SESSION["admin_logged_in"] = true;
         }
 
         $response["redirect"] = "index.php";
@@ -143,8 +143,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             Our intuitive scheduling system makes reserving courts quick and hassle-free. Never miss a game again!
           </p>
           <div class="flex space-x-4">
-            <button class="bg-secondary text-primary px-6 py-3 rounded-lg font-bold hover:bg-white transition">View
-              Schedule</button>
+            <a href="schedule.php">
+              <button class="bg-secondary text-primary px-6 py-3 rounded-lg font-bold hover:bg-white transition">
+                View Schedule
+              </button>
+            </a>
 
             <?php if (isset($_SESSION['user_id'])): ?>
               <a href="profile_page.php" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Profile</a>
@@ -237,8 +240,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
               <a href="index.php" class="text-secondary hover:text-white font-bold underline transition">Home</a>
             </li>
             <li><a href="schedule.php" class="text-secondary hover:text-white transition">Schedule</a></li>
-              <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
-              <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
+            <li><a href="faqs.php" class="text-secondary hover:text-white transition font-bold">FAQs</a></li>
+            <li><a href="contact.php" class="text-secondary hover:text-white transition">Contact</a></li>
           </ul>
         </div>
         <div>
