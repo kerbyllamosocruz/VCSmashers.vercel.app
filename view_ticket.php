@@ -2,15 +2,40 @@
 session_start();
 require_once __DIR__ . '/config/config.php';
 
-// Simple guard: require booking_id
-$booking_id = isset($_GET['booking_id']) ? (int) $_GET['booking_id'] : 0;
-if (!$booking_id) {
-    echo "<p style='padding:20px; font-family:Arial, sans-serif;'>Missing booking id. Open this page with ?booking_id=YOUR_ID</p>";
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: index.php");
     exit;
 }
 
+// Get current user's ID and role
+$current_user_id = (int)$_SESSION['user_id'];
+$current_user_role = $_SESSION['role_id'] ?? 2; // Default to regular user (2) if not set
+
+// Get booking ID and validate
+$booking_id = isset($_GET['booking_id']) ? (int) $_GET['booking_id'] : 0;
+if (!$booking_id) {
+    header("Location: profile_page.php");
+    exit;
+}
+
+// Validate access token if provided
+$access_token = $_GET['access_token'] ?? '';
+$has_valid_token = false;
+
+if ($access_token && isset($_SESSION['receipt_access'])) {
+    $stored = $_SESSION['receipt_access'];
+    if ($stored['token'] === $access_token && 
+        $stored['booking_id'] === $booking_id && 
+        $stored['expiry'] > time()) {
+        $has_valid_token = true;
+        // Clear the token after use
+        unset($_SESSION['receipt_access']);
+    }
+}
+
 // Fetch booking details (assumes bookings table has `booking_id` primary key)
-$stmt = $conn->prepare("SELECT booking_id, user_id, title, description, activity_name, court_number, num_of_participants, fee_per_head, total_fee, event_date, event_time, status FROM bookings WHERE booking_id = ? LIMIT 1");
+$stmt = $conn->prepare("SELECT booking_id, user_id, title, description, activity_name, court_number, num_of_participants, fee_per_head, total_fee, event_date, event_time, event_end_time, status FROM bookings WHERE booking_id = ? LIMIT 1");
 if (!$stmt) {
     echo "<p style='padding:20px;'>Database error: could not prepare statement.</p>";
     exit;
@@ -22,7 +47,17 @@ $booking = $res->fetch_assoc();
 $stmt->close();
 
 if (!$booking) {
-    echo "<p style='padding:20px;'>Booking not found for id: " . htmlspecialchars($booking_id) . "</p>";
+    header("Location: profile_page.php?error=booking_not_found");
+    exit;
+}
+
+// Check if user has permission to view this receipt
+// Allow if: 
+// 1. User has valid access token from payment success, OR
+// 2. User is an admin (role_id = 1), OR
+// 3. User owns this booking
+if (!$has_valid_token && $current_user_role !== 1 && $booking['user_id'] !== $current_user_id) {
+    header("Location: profile_page.php?error=unauthorized");
     exit;
 }
 
@@ -48,7 +83,8 @@ if (!empty($booking['user_id'])) {
 
 // Small helper to format date/time
 $displayDate = date('d-M-Y', strtotime($booking['event_date'] ?? ''));
-$displayTime = date('g:i A', strtotime($booking['event_time'] ?? ''));
+$displayStartTime = date('g:i A', strtotime($booking['event_time'] ?? ''));
+$displayEndTime = date('g:i A', strtotime($booking['event_end_time'] ?? ''));
 
 // Look up the most recent transaction for this user/email with matching amount (best-effort)
 $transactionId = 'N/A';
@@ -139,7 +175,16 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
                     </div>
                     <div class="flex justify-between mb-1">
                         <span class="text-gray-600">Time:</span>
-                        <span class="font-bold"><?php echo htmlspecialchars($displayTime); ?></span>
+                        <span class="font-bold"><?php echo htmlspecialchars($displayStartTime . ' - ' . $displayEndTime); ?></span>
+                    </div>
+                    <div class="flex justify-between mb-1">
+                        <span class="text-gray-600">Duration:</span>
+                        <span class="font-bold"><?php 
+                            $start = strtotime($booking['event_time'] ?? '');
+                            $end = strtotime($booking['event_end_time'] ?? '');
+                            $duration = round(($end - $start) / 3600); // Convert seconds to hours
+                            echo $duration . ' hour' . ($duration > 1 ? 's' : '');
+                        ?></span>
                     </div>
                 </div>
 
@@ -158,7 +203,7 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
 
                 <div class="relative text-center">
                     <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-6xl font-black text-green-500 opacity-20 transform -rotate-12 select-none">PAID</span>
+                        <span class="text-6xl font-black text-green-500 opacity-20 transform -rotate-12 select-none">CONFIRMED</span>
                     </div>
                     <p class="text-gray-500 italic">Thank you for your reservation!</p>
                 </div>

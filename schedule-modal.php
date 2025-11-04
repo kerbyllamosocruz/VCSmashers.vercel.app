@@ -12,6 +12,8 @@
             <form id="bookingForm" method="POST" class="space-y-4">
                 <input type="hidden" id="event_date" name="event_date">
                 <input type="hidden" id="event_time" name="event_time">
+                <!-- court_number is provided by the page (fetch_courts) -->
+                <input type="hidden" id="court_number" name="court_number">
 
                 <div>
                     <label for="title" class="block text-sm font-medium text-accent">Title</label>
@@ -33,15 +35,13 @@
                         <option value="Badminton">Badminton</option>
                     </select>
                 </div>
-
                 <div class="flex gap-4">
                     <div class="flex-1">
-                        <label for="court_number" class="block text-sm font-medium text-accent">Court Number</label>
-                        <select id="court_number" name="court_number" required
+                        <label for="event_end_time" class="block text-sm font-medium text-accent">End Time</label>
+                        <select id="event_end_time" name="event_end_time" required
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-accent">
-                            <option value="1">Court 1</option>
-                            <option value="2">Court 2</option>
-                            <option value="3">Court 3</option>
+                            <option value="">Select end time</option>
+                            <!-- options are populated dynamically based on chosen start time -->
                         </select>
                     </div>
 

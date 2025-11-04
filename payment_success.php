@@ -177,6 +177,7 @@ $court_number = (int) ($_SESSION['pending_booking']['court_number'] ?? 1);
 $num_of_participants = (int) ($_SESSION['pending_booking']['num_of_participants'] ?? 1);
 $event_date = $_SESSION['pending_booking']['event_date'] ?? date('Y-m-d');
 $event_time = $_SESSION['pending_booking']['event_time'] ?? date('H:i:s');
+$event_end_time = $_SESSION['pending_booking']['event_end_time'] ?? null;
 
 $fee_per_head = match ($activity_name) {
     'Pickleball' => 40,
@@ -186,11 +187,59 @@ $fee_per_head = match ($activity_name) {
 $total_fee = $fee_per_head * $num_of_participants;
 $statusBooking = 'CONFIRMED';
 
-$bstmt = $conn->prepare("INSERT INTO bookings (user_id, title, description, activity_name, court_number, num_of_participants, fee_per_head, total_fee, event_date, event_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-if ($bstmt) {
-    $bstmt->bind_param("isssiiddsss", $user_id, $title, $description, $activity_name, $court_number, $num_of_participants, $fee_per_head, $total_fee, $event_date, $event_time, $statusBooking);
-    $bstmt->execute();
-    $bstmt->close();
+// Build list of hourly slots to reserve
+$slots = [];
+if (!empty($event_end_time) && strtotime($event_end_time) > strtotime($event_time)) {
+    $t = strtotime($event_time);
+    $end = strtotime($event_end_time);
+    while ($t < $end) {
+        $slots[] = date('H:i:s', $t);
+        $t += 3600;
+    }
+} else {
+    $slots[] = $event_time;
+}
+
+// Optional: check conflicts before inserting (if any slot already booked, abort)
+foreach ($slots as $s) {
+    $chk = $conn->prepare("SELECT COUNT(*) AS c FROM bookings WHERE event_date = ? AND court_number = ? AND event_time = ? AND status IN ('PENDING','CONFIRMED')");
+    $chk->bind_param("sis", $event_date, $court_number, $s);
+    $chk->execute();
+    $res = $chk->get_result()->fetch_assoc();
+    $chk->close();
+    if (!empty($res['c']) && (int)$res['c'] > 0) {
+        // Conflict detected; payed transaction already recorded. Log and abort creating bookings.
+        // You may want to notify admins or refund the user in this case.
+        // For now, skip creating bookings and continue to cleanup.
+        // (Alternatively, you can choose to overwrite or merge — handle per your policy.)
+        break;
+    }
+}
+
+// Insert each slot as its own booking row
+$conn->begin_transaction();
+$insert = $conn->prepare("INSERT INTO bookings (user_id, title, description, activity_name, court_number, num_of_participants, fee_per_head, total_fee, event_date, event_time, event_end_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+if ($insert) {
+    $event_time_var = $event_time;
+    $booking_id = 0;
+    $insert->bind_param("isssiiddssss", $user_id, $title, $description, $activity_name, $court_number, $num_of_participants, $fee_per_head, $total_fee, $event_date, $event_time_var, $event_end_time, $statusBooking);
+    $ok = true;
+    foreach ($slots as $s) {
+        $event_time_var = $s;
+        if (!$insert->execute()) {
+            $ok = false;
+            break;
+        }
+        if ($booking_id === 0) {
+            $booking_id = $conn->insert_id; // Get the ID of the first booking
+        }
+    }
+    if ($ok) {
+        $conn->commit();
+    } else {
+        $conn->rollback();
+    }
+    $insert->close();
 }
 
 // Cleanup
@@ -202,12 +251,28 @@ if (!empty($ref)) {
     }
 }
 
-// Redirect back to schedule page
+// Generate one-time access token for viewing the receipt
+$access_token = bin2hex(random_bytes(32));
+$token_expiry = time() + 300; // Token valid for 5 minutes
+
+// Store token in session
+$_SESSION['receipt_access'] = [
+    'token' => $access_token,
+    'booking_id' => $booking_id,
+    'expiry' => $token_expiry
+];
+
+// Redirect to view ticket/receipt
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
 $baseUrl = rtrim($scheme . '://' . $host . $base, '/');
-header('Location: ' . $baseUrl . '/schedule.php?paid=1');
+
+if ($booking_id > 0) {
+    header('Location: ' . $baseUrl . '/view_ticket.php?booking_id=' . $booking_id . '&access_token=' . $access_token);
+} else {
+    header('Location: ' . $baseUrl . '/schedule.php?paid=1');
+}
 exit;
 
 

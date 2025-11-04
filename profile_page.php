@@ -8,6 +8,18 @@ $userPhone = $_SESSION["phone"] ?? "";
 $status = $_GET['status'] ?? '';
 $message = $_GET['message'] ?? '';
 
+// First, update status of past bookings to COMPLETED
+$current_date = date('Y-m-d');
+$current_time = date('H:i:s');
+$update_sql = "UPDATE bookings 
+               SET status = 'COMPLETED' 
+               WHERE (event_date < ?) 
+               OR (event_date = ? AND event_time < ?) 
+               AND status = 'CONFIRMED'";
+$update_stmt = $conn->prepare($update_sql);
+$update_stmt->bind_param('sss', $current_date, $current_date, $current_time);
+$update_stmt->execute();
+
 $bookings = [];
 // Only show bookings for the current user and include booking_id
 $user_id = $_SESSION['user_id'] ?? 0;
@@ -81,7 +93,9 @@ if ($result->num_rows > 0) {
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-20">
         <div class="flex items-center">
-          <img src="Assets/logo.png" alt="Maysan Badminton Court Logo" class="h-10" />
+          <a href="index.php">
+            <img src="Assets/logo.png" alt="Maysan Badminton Court Logo" class="h-10" />
+          </a>
         </div>
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"
@@ -228,6 +242,12 @@ if ($result->num_rows > 0) {
                     </svg>
                     Completed
                   </p>
+                </div>
+                <div class="flex-shrink-0">
+                  <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)"
+                    class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
+                    View Receipt
+                  </button>
                 </div>
               </div>
             <?php endif; ?>

@@ -27,7 +27,9 @@ require_once "config/config.php";
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-20">
         <div class="flex items-center">
-          <img src="Assets/logo.png" alt="Maysan Badminton Court Logo" class="h-10" />
+          <a href="index.php">
+            <img src="Assets/logo.png" alt="Maysan Badminton Court Logo" class="h-10" />
+          </a>
         </div>
         <div class="hidden md:flex items-center space-x-8">
           <a href="index.php"

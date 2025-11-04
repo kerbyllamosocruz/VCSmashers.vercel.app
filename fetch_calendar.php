@@ -42,10 +42,22 @@ $startDayOfWeek = date('w', $firstDayOfMonth);
   for ($day = 1; $day <= $totalDays; $day++) {
     $dateValue = sprintf("%04d-%02d-%02d", $year, $month, $day);
     $isToday = ($day == date('j') && $month == date('n') && $year == date('Y'));
+    $isPastDate = $dateValue < date('Y-m-d');
 
-    echo '<div data-date="' . $dateValue . '" class="calendar-day py-3 cursor-pointer border border-gray-300 ' .
-      ($isToday ? 'today bg-primary text-white font-bold' : 'bg-secondary/30 hover:bg-primary hover:text-white') .
-      '">' . $day . '</div>';
+    $classes = 'calendar-day py-3 border border-gray-300 ';
+    
+    if ($isPastDate) {
+      $classes .= 'bg-gray-200 text-gray-400 cursor-not-allowed';
+    } else if ($isToday) {
+      $classes .= 'cursor-pointer today bg-primary text-white font-bold';
+    } else {
+      $classes .= 'cursor-pointer bg-secondary/30 hover:bg-primary hover:text-white';
+    }
+
+    echo '<div data-date="' . $dateValue . '" ' . 
+         ($isPastDate ? 'data-disabled="true"' : '') . 
+         ' class="' . $classes . '">' . 
+         $day . '</div>';
   }
   ?>
 </div>

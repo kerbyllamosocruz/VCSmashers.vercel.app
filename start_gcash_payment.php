@@ -14,6 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Validate required fields
+if (empty($_POST['event_end_time'])) {
+    echo json_encode(['status' => 'error', 'message' => 'Please select an end time for your booking.']);
+    exit;
+}
+
 $pendingBooking = [
     'user_id' => isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : null,
     'title' => $_POST['title'] ?? '',
@@ -22,7 +28,9 @@ $pendingBooking = [
     'court_number' => $_POST['court_number'] ?? 1,
     'num_of_participants' => $_POST['num_of_participants'] ?? 1,
     'event_date' => $_POST['event_date'] ?? date('Y-m-d'),
-    'event_time' => $_POST['event_time'] ?? date('H:i:s'),
+        'event_time' => $_POST['event_time'] ?? date('H:i:s'),
+        // Preserve optional end time so multi-hour bookings survive the payment redirect
+        'event_end_time' => $_POST['event_end_time'] ?? null,
 ];
 
 $activityName = $pendingBooking['activity_name'];
@@ -32,7 +40,14 @@ $feePerHead = match ($activityName) {
     'Badminton' => 30,
     default => 0,
 };
-$totalFee = $feePerHead * $numParticipants;
+
+// Calculate number of hours
+$startTime = strtotime($pendingBooking['event_time']);
+$endTime = strtotime($pendingBooking['event_end_time']);
+$hours = max(1, ceil(($endTime - $startTime) / 3600)); // At least 1 hour, rounded up
+
+// Calculate total fee: fee per head × number of participants × number of hours
+$totalFee = $feePerHead * $numParticipants * $hours;
 
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
@@ -52,7 +67,13 @@ $payload = [
             'payment_method_types' => ['gcash'],
             'line_items' => [
                 [
-                    'name' => $activityName ?: 'Court Booking',
+                    'name' => sprintf(
+                        '%s - %d participants × %d hour(s) × ₱%d per person',
+                        $activityName ?: 'Court Booking',
+                        $numParticipants,
+                        $hours,
+                        $feePerHead
+                    ),
                     'amount' => $amountCentavos,
                     'currency' => 'PHP',
                     'quantity' => 1,
