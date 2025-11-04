@@ -30,7 +30,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
+    while ($row = $result->fetch_assoc()) {
         $bookings[] = $row;
     }
 }
@@ -38,7 +38,7 @@ if ($result->num_rows > 0) {
 $next_order = ($sort_order == 'ASC') ? 'DESC' : 'ASC';
 
 ?>
-
+<link rel="icon" type="image/x-icon" href="../Assets/logo.png" />
 <h1 class="text-3xl font-bold text-primary mb-6">Booking Logs</h1>
 
 <div class="mb-4">
