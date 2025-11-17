@@ -102,7 +102,7 @@ require_once "config/config.php";
         </div>
     </div>
 
-    <div id="modal-container"></div>
+    <?php include 'modals.php'; ?>
 
     <footer class="bg-[#232067] text-white py-12 mt-10">
         <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -167,19 +167,10 @@ require_once "config/config.php";
         });
 
         feather.replace();
-
-        fetch("login-modal.php")
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById("modal-container").innerHTML = html;
-                feather.replace();
-                if (typeof initLoginModal === "function") initLoginModal();
-            });
         // Expose login state to JS
         window.IS_LOGGED_IN = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
     </script>
     <script src="schedule.js"></script>
-    <script src="login.js"></script>
     <script>
         // Make showTicketModal globally accessible
         window.showTicketModal = function(bookingId) {

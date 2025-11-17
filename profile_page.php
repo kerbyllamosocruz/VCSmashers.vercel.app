@@ -280,7 +280,8 @@ if ($result->num_rows > 0) {
     </section>
   </div>
 
-<footer class="bg-[#232067] text-white py-12">
+  <?php include 'modals.php'; ?>
+  <footer class="bg-[#232067] text-white py-12">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
         <div>

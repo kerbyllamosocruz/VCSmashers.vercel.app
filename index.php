@@ -239,7 +239,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </section>
 
-  <div id="modal-container"></div>
+  <?php include 'modals.php'; ?>
   <footer class="bg-[#232067] text-white py-12">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
@@ -290,6 +290,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     </div>
   </footer>
   <script>
+    const phpError = <?php echo json_encode($error); ?>;
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
 
@@ -297,32 +298,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       mobileMenu.classList.toggle('hidden');
     });
 
-    let phpError = <?php echo json_encode($error); ?>;
-
-    fetch("login-modal.php")
-      .then(res => res.text())
-      .then(html => {
-        document.getElementById("modal-container").innerHTML = html;
-
-        feather.replace();
-        initLoginModal();
-
-        if (phpError) {
-          const errorEl = document.querySelector("#loginModal p.text-red-500");
-          if (errorEl) errorEl.textContent = phpError;
-
-          document.getElementById("loginModal").classList.remove("modal-hidden");
-        }
-
-        // Dynamically load register.js after modals are in DOM
-        const script = document.createElement('script');
-        script.src = 'register.js';
-        document.body.appendChild(script);
-      });
-
     feather.replace();
+
+    if (phpError) {
+      const errorEl = document.querySelector("#loginModal p.text-red-500");
+      if (errorEl) errorEl.textContent = phpError;
+
+      const loginModalElement = document.getElementById("loginModal");
+      if (loginModalElement) {
+        loginModalElement.classList.remove("modal-hidden");
+      }
+    }
   </script>
-  <script src="login.js"></script>
 </body>
 
 </html>

@@ -31,8 +31,9 @@
 
           <div>
             <label for="regPassword" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="regPassword" name="pass" required
+            <input type="password" id="regPassword" name="pass" required minlength="6" maxlength="18"
               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+            <p class="text-xs text-gray-500 mt-1">6-18 characters.</p>
           </div>
 
           <div id="registerAlert" class="hidden mb-4 text-center text-sm"></div>

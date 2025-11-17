@@ -11,6 +11,19 @@ function initLoginModal() {
 
   if (!loginModal) return;
 
+  const resetRegisterFlow = () => {
+    if (typeof window.resetRegisterFlow === "function") {
+      window.resetRegisterFlow();
+    }
+  };
+
+  const hideRegisterModal = () => {
+    if (registerModal) {
+      registerModal.classList.add("modal-hidden");
+      resetRegisterFlow();
+    }
+  };
+
   // Open Login Modal
   openLoginBtns.forEach((btn) => {
     btn.addEventListener("click", () => loginModal.classList.remove("modal-hidden"));
@@ -29,7 +42,7 @@ function initLoginModal() {
   if (backToLoginLink) {
     backToLoginLink.addEventListener("click", (e) => {
       e.preventDefault();
-      registerModal && registerModal.classList.add("modal-hidden");
+      hideRegisterModal();
       loginModal.classList.remove("modal-hidden");
     });
   }
@@ -38,7 +51,7 @@ function initLoginModal() {
   closeBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       loginModal.classList.add("modal-hidden");
-      registerModal && registerModal.classList.add("modal-hidden");
+      hideRegisterModal();
     });
   });
 
@@ -48,7 +61,7 @@ function initLoginModal() {
   });
   if (registerModal) {
     registerModal.addEventListener("click", (e) => {
-      if (e.target === registerModal) registerModal.classList.add("modal-hidden");
+      if (e.target === registerModal) hideRegisterModal();
     });
   }
 

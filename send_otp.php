@@ -22,6 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
+    $passwordLength = strlen($password_raw);
+    if ($passwordLength < 6 || $passwordLength > 18) {
+        echo json_encode(["status" => "error", "message" => "Password must be 6-18 characters long."]);
+        exit;
+    }
+
     // Check existing email
     $check = $conn->prepare("SELECT email FROM users WHERE email = ?");
     $check->bind_param("s", $email);

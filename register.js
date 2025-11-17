@@ -1,12 +1,43 @@
-  const registerModal = document.getElementById("registerModal");
-  const registerForm = document.getElementById("registerForm");
-  const otpForm = document.getElementById("otpForm");
-  const registerAlert = document.getElementById("registerAlert");
-  const otpAlert = document.getElementById("otpAlert");
-  const backToLogin = document.getElementById("backToLogin");
-  const closeRegisterModal = document.getElementById("closeRegisterModal");
-  const registerFormContainer = document.getElementById("registerFormContainer");
-  const otpFormContainer = document.getElementById("otpFormContainer");
+ const registerModal = document.getElementById("registerModal");
+ const registerForm = document.getElementById("registerForm");
+ const otpForm = document.getElementById("otpForm");
+ const registerAlert = document.getElementById("registerAlert");
+ const otpAlert = document.getElementById("otpAlert");
+ const backToLogin = document.getElementById("backToLogin");
+ const closeRegisterModal = document.getElementById("closeRegisterModal");
+ const registerFormContainer = document.getElementById("registerFormContainer");
+ const otpFormContainer = document.getElementById("otpFormContainer");
+
+ const registerAlertDefaultClass = registerAlert ? registerAlert.className : "hidden mb-4 text-center text-sm";
+ const otpAlertDefaultClass = otpAlert ? otpAlert.className : "hidden mb-4 text-center text-sm";
+
+ const resetAlert = (alertEl, defaultClass) => {
+   if (!alertEl) return;
+   alertEl.textContent = "";
+   alertEl.className = defaultClass;
+   if (!alertEl.classList.contains("hidden")) {
+     alertEl.classList.add("hidden");
+   }
+ };
+
+ const resetRegisterFlow = () => {
+   if (registerForm) registerForm.reset();
+   if (otpForm) otpForm.reset();
+
+   resetAlert(registerAlert, registerAlertDefaultClass);
+   resetAlert(otpAlert, otpAlertDefaultClass);
+
+   if (registerFormContainer) registerFormContainer.classList.remove("hidden");
+   if (otpFormContainer) otpFormContainer.classList.add("hidden");
+ };
+
+ window.resetRegisterFlow = resetRegisterFlow;
+ resetRegisterFlow();
+ window.addEventListener("pageshow", (event) => {
+   if (event.persisted) {
+     resetRegisterFlow();
+   }
+ });
 
   if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
@@ -67,6 +98,7 @@
             if (loginModalElement) {
               loginModalElement.classList.remove("modal-hidden");
             }
+            resetRegisterFlow();
           }, 1500);
         } else {
           otpAlert.className = "text-red-500 text-sm mb-4 text-center";
@@ -84,6 +116,7 @@
   if (closeRegisterModal) {
     closeRegisterModal.addEventListener("click", () => {
       registerModal.classList.add("modal-hidden");
+      resetRegisterFlow();
     });
   }
 
