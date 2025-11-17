@@ -1,50 +1,55 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 require_once __DIR__ . '/config/config.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name  = isset($_POST["name"]) ? trim($_POST["name"]) : '';
-    $email = isset($_POST["email"]) ? trim($_POST["email"]) : '';
-    $phone = isset($_POST["phone"]) ? trim($_POST["phone"]) : '';
-    $password_raw = isset($_POST["pass"]) ? $_POST["pass"] : (isset($_POST["password"]) ? $_POST["password"] : '');
+    $otp = isset($_POST["otp"]) ? trim($_POST["otp"]) : '';
 
-    if ($name === '' || $email === '' || $password_raw === '') {
-        echo json_encode(["status" => "error", "message" => "Name, email, and password are required."]);
+    if ($otp === '') {
+        echo json_encode(["status" => "error", "message" => "Please enter the OTP."]);
         exit;
     }
 
-    $pass  = password_hash($password_raw, PASSWORD_DEFAULT);
-    $role_id = 2;
-
-    // Check existing email
-    $check = $conn->prepare("SELECT email FROM users WHERE email = ?");
-    $check->bind_param("s", $email);
-    $check->execute();
-    $check->store_result();
-
-    if ($check->num_rows > 0) {
-        echo json_encode(["status" => "error", "message" => "Email already registered."]);
+    if (!isset($_SESSION['otp']) || !isset($_SESSION['registration_data'])) {
+        echo json_encode(["status" => "error", "message" => "Session expired. Please try registering again."]);
         exit;
-    } else {
+    }
+
+    // OTP expiry check (10 minutes)
+    if (time() - $_SESSION['otp_time'] > 600) {
+        echo json_encode(["status" => "error", "message" => "OTP has expired. Please request a new one."]);
+        unset($_SESSION['otp']);
+        unset($_SESSION['otp_time']);
+        unset($_SESSION['registration_data']);
+        exit;
+    }
+
+    if ($_SESSION['otp'] == $otp) {
+        $reg_data = $_SESSION['registration_data'];
+        $role_id = 2;
+
         $stmt = $conn->prepare("INSERT INTO users (role_id, name, email, phone, pass) VALUES (?, ?, ?, ?, ?)");
         if ($stmt === false) {
             echo json_encode(["status" => "error", "message" => "Database error: " . $conn->error]);
             exit;
         }
 
-        $stmt->bind_param("issss", $role_id, $name, $email, $phone, $pass);
+        $stmt->bind_param("issss", $role_id, $reg_data['name'], $reg_data['email'], $reg_data['phone'], $reg_data['pass']);
         if ($stmt->execute()) {
+            unset($_SESSION['otp']);
+            unset($_SESSION['otp_time']);
+            unset($_SESSION['registration_data']);
             echo json_encode(["status" => "success", "message" => "Registered successfully! Please login."]);
-            exit;
         } else {
             echo json_encode(["status" => "error", "message" => "Registration failed. Try again."]);
-            exit;
         }
         $stmt->close();
+    } else {
+        echo json_encode(["status" => "error", "message" => "Invalid OTP."]);
     }
 
-    $check->close();
+    $conn->close();
+    exit;
 }
-
-$conn->close();
 ?>

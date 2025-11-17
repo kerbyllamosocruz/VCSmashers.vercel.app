@@ -92,65 +92,7 @@ function initLoginModal() {
   }
 }
 
-function initRegisterForm() {
-  const registerModal = document.getElementById("registerModal");
-  const loginModal = document.getElementById("loginModal");
-  const registerForm = document.getElementById("registerForm");
-  const errorEl = document.getElementById("registerError");
-  const submitBtn = registerForm?.querySelector('button[type="submit"]');
-
-  if (!registerForm || !errorEl) return;
-
-  if (registerForm.__bound) return;
-  registerForm.__bound = true;
-
-  registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    errorEl.textContent = "";
-    
-    if (submitBtn) submitBtn.disabled = true;
-
-    try {
-      const formData = new FormData(registerForm);
-      const res = await fetch("register.php", {
-        method: "POST",
-        headers: { "X-Requested-With": "XMLHttpRequest" },
-        body: formData
-      });
-
-      const contentType = res.headers.get("content-type") || "";
-      
-      if (res.ok && contentType.includes("application/json")) {
-        const data = await res.json();
-        if (data.status === "success") {
-          errorEl.textContent = data.message || "Registration successful!";
-          errorEl.className = "text-green-500 text-sm mb-4 text-center";
-          setTimeout(() => {
-            registerModal?.classList.add("modal-hidden");
-            loginModal?.classList.remove("modal-hidden");
-          }, 1500);
-        } else {
-          errorEl.textContent = data.message || "Registration failed";
-          errorEl.className = "text-red-500 text-sm mb-4 text-center";
-        }
-      } else {
-        const text = await res.text();
-        console.error("Unexpected register response:", res.status, text);
-        errorEl.textContent = "Server error — check console";
-        errorEl.className = "text-red-500 text-sm mb-4 text-center";
-      }
-    } catch (err) {
-      console.error("Register fetch error:", err);
-      errorEl.textContent = "Network error. Try again.";
-      errorEl.className = "text-red-500 text-sm mb-4 text-center";
-    } finally {
-      if (submitBtn) submitBtn.disabled = false;
-    }
-  });
-}
-
 // Initialize both forms when the DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   initLoginModal();
-  initRegisterForm();
 });
