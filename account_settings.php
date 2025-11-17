@@ -5,6 +5,21 @@ $userEmail = $_SESSION["email"] ?? "Unknown";
 $userPhone = $_SESSION["phone"] ?? "";
 $status = $_GET['status'] ?? '';
 $message = $_GET['message'] ?? '';
+
+function mask_email($email)
+{
+  if (!$email || strpos($email, '@') === false) {
+    return $email;
+  }
+  [$local, $domain] = explode('@', $email, 2);
+  if (strlen($local) <= 2) {
+    return substr($local, 0, 1) . str_repeat('*', max(0, strlen($local) - 1)) . '@' . $domain;
+  }
+  $maskedLocal = substr($local, 0, 1) . str_repeat('*', strlen($local) - 2) . substr($local, -1);
+  return $maskedLocal . '@' . $domain;
+}
+
+$maskedEmail = mask_email($userEmail);
 ?>
 
 <!DOCTYPE html>
@@ -162,21 +177,24 @@ $message = $_GET['message'] ?? '';
 
     <div id="security" class="bg-white p-6 rounded-lg shadow-lg settings-section">
       <h3 class="text-xl font-bold text-primary mb-4">Security</h3>
-      <form action="change_password.php" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div id="passwordChangeAlert" class="hidden mb-4 p-3 rounded-md text-sm"></div>
+      <form id="changePasswordForm" class="grid grid-cols-1 md:grid-cols-3 gap-6" data-masked-email="<?php echo htmlspecialchars($maskedEmail); ?>">
         <div>
           <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
           <input type="password" id="current-password" name="current_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
         </div>
         <div>
           <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
-          <input type="password" id="new-password" name="new_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+          <input type="password" id="new-password" name="new_password" required minlength="6" maxlength="18" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+          <p class="text-xs text-gray-500 mt-1">6-18 characters.</p>
         </div>
         <div>
           <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-          <input type="password" id="confirm-password" name="confirm_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+          <input type="password" id="confirm-password" name="confirm_password" required minlength="6" maxlength="18" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
         </div>
-        <div class="md:col-span-3">
-          <button type="submit" class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90">Update Password</button>
+        <div class="md:col-span-3 flex flex-col gap-2">
+          <button type="button" id="requestPasswordOtpBtn" class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90 transition">Change Password</button>
+          <p class="text-xs text-gray-500">A 6-digit code will be sent to <?php echo htmlspecialchars($maskedEmail); ?>.</p>
         </div>
       </form>
       <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -252,6 +270,28 @@ $message = $_GET['message'] ?? '';
     </div>
 
       </section>
+    </div>
+  </div>
+
+  <!-- Password OTP Modal -->
+  <div id="passwordOtpModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center z-[60] px-4">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 relative">
+      <button type="button" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700" data-close-password-otp>
+        <i data-feather="x"></i>
+      </button>
+      <h3 class="text-xl font-bold text-primary mb-2">Enter OTP</h3>
+      <p id="passwordOtpHelp" class="text-sm text-gray-600 mb-4">Please enter the 6-digit code sent to your email.</p>
+      <div id="passwordOtpModalAlert" class="hidden mb-3 p-2 rounded text-sm"></div>
+      <form id="passwordOtpForm" class="space-y-4">
+        <div>
+          <label for="password-otp" class="block text-sm font-medium text-gray-700">OTP Code</label>
+          <input type="text" id="password-otp" name="otp" pattern="[0-9]{6}" maxlength="6" minlength="6" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="123456" inputmode="numeric" required />
+        </div>
+        <div class="flex gap-3">
+          <button type="submit" class="flex-1 bg-primary text-white px-4 py-2 rounded-md font-bold hover:bg-opacity-90 transition">Confirm Password Change</button>
+          <button type="button" class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition" data-close-password-otp>Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -341,6 +381,145 @@ $message = $_GET['message'] ?? '';
         menu.addEventListener('click', () => {
           navLinks.classList.toggle('active');
           menu.classList.toggle('open');
+        });
+      }
+
+      const passwordChangeForm = document.getElementById('changePasswordForm');
+      if (passwordChangeForm) {
+        const sendOtpBtn = document.getElementById('requestPasswordOtpBtn');
+        const passwordOtpModal = document.getElementById('passwordOtpModal');
+        const passwordOtpForm = document.getElementById('passwordOtpForm');
+        const passwordOtpInput = document.getElementById('password-otp');
+        const alertBox = document.getElementById('passwordChangeAlert');
+        const otpHelp = document.getElementById('passwordOtpHelp');
+        const modalAlert = document.getElementById('passwordOtpModalAlert');
+        const closeModalButtons = document.querySelectorAll('[data-close-password-otp]');
+        const maskedEmail = passwordChangeForm.dataset.maskedEmail || '';
+
+        const showAlert = (message, type = 'error') => {
+          if (!alertBox) return;
+          alertBox.textContent = message;
+          alertBox.className = `mb-4 p-3 rounded-md text-sm ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+          alertBox.classList.remove('hidden');
+        };
+
+        const showModalAlert = (message, type = 'error') => {
+          if (!modalAlert) return;
+          modalAlert.textContent = message;
+          modalAlert.className = `mb-3 p-2 rounded text-sm ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+          modalAlert.classList.remove('hidden');
+        };
+
+        const hideModalAlert = () => {
+          if (!modalAlert) return;
+          modalAlert.classList.add('hidden');
+        };
+
+        const togglePasswordOtpModal = (show) => {
+          if (!passwordOtpModal) return;
+          if (show) {
+            passwordOtpModal.classList.remove('hidden');
+            passwordOtpModal.classList.add('flex');
+            hideModalAlert();
+            passwordOtpInput?.focus();
+          } else {
+            passwordOtpModal.classList.add('hidden');
+            passwordOtpModal.classList.remove('flex');
+          }
+        };
+
+        closeModalButtons.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            togglePasswordOtpModal(false);
+          });
+        });
+
+        passwordOtpModal?.addEventListener('click', (event) => {
+          if (event.target === passwordOtpModal) {
+            togglePasswordOtpModal(false);
+          }
+        });
+
+        const setButtonLoading = (btn, isLoading, loadingText) => {
+          if (!btn) return;
+          if (isLoading) {
+            btn.dataset.originalText = btn.textContent;
+            btn.textContent = loadingText || 'Please wait...';
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+          } else {
+            const original = btn.dataset.originalText;
+            if (original) {
+              btn.textContent = original;
+            }
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+          }
+        };
+
+        const handleSendOtp = async () => {
+          const formData = new FormData(passwordChangeForm);
+          setButtonLoading(sendOtpBtn, true, 'Sending...');
+          try {
+            const response = await fetch('send_change_password_otp.php', {
+              method: 'POST',
+              body: formData
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+              showAlert(data.message, 'success');
+              if (otpHelp) {
+                otpHelp.textContent = `Enter the 6-digit code sent to ${data.maskedEmail || maskedEmail}.`;
+              }
+              passwordOtpForm?.reset();
+              togglePasswordOtpModal(true);
+            } else {
+              showAlert(data.message || 'Unable to send OTP.');
+            }
+          } catch (error) {
+            console.error('Password OTP error:', error);
+            showAlert('Network error. Please try again.');
+          } finally {
+            setButtonLoading(sendOtpBtn, false);
+          }
+        };
+
+        sendOtpBtn?.addEventListener('click', (event) => {
+          event.preventDefault();
+          handleSendOtp();
+        });
+
+        passwordOtpForm?.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          hideModalAlert();
+          if (!passwordOtpInput || passwordOtpInput.value.trim() === '') {
+            showModalAlert('Please enter the OTP from your email.');
+            return;
+          }
+          const submitBtn = passwordOtpForm.querySelector('button[type="submit"]');
+          setButtonLoading(submitBtn, true, 'Verifying...');
+          try {
+            const otpData = new FormData();
+            otpData.append('otp', passwordOtpInput.value.trim());
+            const response = await fetch('change_password.php', {
+              method: 'POST',
+              body: otpData
+            });
+            const data = await response.json();
+            if (data.status === 'success') {
+              showAlert(data.message, 'success');
+              passwordChangeForm.reset();
+              passwordOtpForm.reset();
+              togglePasswordOtpModal(false);
+            } else {
+              showModalAlert(data.message || 'Invalid OTP.');
+            }
+          } catch (error) {
+            console.error('Password OTP verify error:', error);
+            showModalAlert('Network error. Please try again.');
+          } finally {
+            setButtonLoading(submitBtn, false);
+          }
         });
       }
     })();
