@@ -2,6 +2,30 @@
 $month = isset($_GET['month']) ? (int)$_GET['month'] : date('n');
 $year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
 
+// Calculate the date limit (1 year from today)
+$today = new DateTime();
+$maxDate = clone $today;
+$maxDate->modify('+1 year');
+
+// If we're within 10 days of next month, extend by one more month
+$daysUntilNextMonth = (int)$today->format('t') - (int)$today->format('j');
+if ($daysUntilNextMonth < 10) {
+    $maxDate->modify('+1 month');
+}
+
+$maxMonth = (int)$maxDate->format('n');
+$maxYear = (int)$maxDate->format('Y');
+
+// Check if we can navigate to previous month
+$prevMonth = $month - 1 <= 0 ? 12 : $month - 1;
+$prevYear = $month - 1 <= 0 ? $year - 1 : $year;
+$canGoPrev = ($prevYear > date('Y')) || ($prevYear == date('Y') && $prevMonth >= date('n'));
+
+// Check if we can navigate to next month
+$nextMonth = $month + 1 > 12 ? 1 : $month + 1;
+$nextYear = $month + 1 > 12 ? $year + 1 : $year;
+$canGoNext = ($nextYear < $maxYear) || ($nextYear == $maxYear && $nextMonth <= $maxMonth);
+
 $firstDayOfMonth = mktime(0, 0, 0, $month, 1, $year);
 $totalDays = date('t', $firstDayOfMonth);
 $monthName = date('F', $firstDayOfMonth);
@@ -11,16 +35,29 @@ $startDayOfWeek = date('w', $firstDayOfMonth);
 <div class="flex justify-between items-center mb-6">
   <h2 class="text-2xl font-bold text-primary"><?= $monthName . " " . $year ?></h2>
   <div class="flex space-x-2">
-    <button data-nav data-month="<?= $month - 1 <= 0 ? 12 : $month - 1 ?>"
-      data-year="<?= $month - 1 <= 0 ? $year - 1 : $year ?>"
+    <?php if ($canGoPrev): ?>
+    <button data-nav data-month="<?= $prevMonth ?>"
+      data-year="<?= $prevYear ?>"
       class="p-2 rounded-full hover:bg-secondary transition">
       <i data-feather="chevron-left" class="text-primary"></i>
     </button>
-    <button data-nav data-month="<?= $month + 1 > 12 ? 1 : $month + 1 ?>"
-      data-year="<?= $month + 1 > 12 ? $year + 1 : $year ?>"
+    <?php else: ?>
+    <button disabled class="p-2 rounded-full opacity-30 cursor-not-allowed">
+      <i data-feather="chevron-left" class="text-gray-400"></i>
+    </button>
+    <?php endif; ?>
+
+    <?php if ($canGoNext): ?>
+    <button data-nav data-month="<?= $nextMonth ?>"
+      data-year="<?= $nextYear ?>"
       class="p-2 rounded-full hover:bg-secondary transition">
       <i data-feather="chevron-right" class="text-primary"></i>
     </button>
+    <?php else: ?>
+    <button disabled class="p-2 rounded-full opacity-30 cursor-not-allowed">
+      <i data-feather="chevron-right" class="text-gray-400"></i>
+    </button>
+    <?php endif; ?>
   </div>
 </div>
 
