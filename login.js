@@ -24,12 +24,10 @@ function initLoginModal() {
     }
   };
 
-  // Open Login Modal
   openLoginBtns.forEach((btn) => {
     btn.addEventListener("click", () => loginModal.classList.remove("modal-hidden"));
   });
 
-  // Switch to Register
   if (openRegisterLink) {
     openRegisterLink.addEventListener("click", (e) => {
       e.preventDefault();
@@ -38,7 +36,6 @@ function initLoginModal() {
     });
   }
 
-  // Switch back to Login
   if (backToLoginLink) {
     backToLoginLink.addEventListener("click", (e) => {
       e.preventDefault();

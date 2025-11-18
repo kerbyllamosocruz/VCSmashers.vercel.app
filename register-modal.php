@@ -31,8 +31,33 @@
 
           <div>
             <label for="regPassword" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" id="regPassword" name="pass" required minlength="6" maxlength="18"
-              class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+            <div class="relative">
+              <input type="password" id="regPassword" name="pass" required minlength="6" maxlength="18"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+              <button
+                type="button"
+                id="toggle-reg-password"
+                class="absolute inset-y-0 right-3 flex items-center text-zinc-500 transition-colors hover:text-zinc-900"
+                aria-label="Toggle password visibility"
+              >
+                <svg
+                  id="eye-icon-reg"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"
+                  />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
             <p class="text-xs text-gray-500 mt-1">6-18 characters.</p>
           </div>
 

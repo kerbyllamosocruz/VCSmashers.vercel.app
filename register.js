@@ -39,6 +39,18 @@
    }
  });
 
+ // Password visibility toggle for registration
+ const regPasswordInput = document.getElementById("regPassword");
+ const regEyeIcon = document.getElementById("eye-icon-reg");
+ const toggleRegPasswordButton = document.getElementById("toggle-reg-password");
+ toggleRegPasswordButton?.addEventListener("click", () => {
+   const isPassword = regPasswordInput.type === "password";
+   regPasswordInput.type = isPassword ? "text" : "password";
+   regEyeIcon.innerHTML = isPassword
+     ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-6.94M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 3-3M1 1l22 22" />'
+     : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />';
+ });
+
   if (registerForm) {
     registerForm.addEventListener("submit", async (e) => {
       e.preventDefault();
