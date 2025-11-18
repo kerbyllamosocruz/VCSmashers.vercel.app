@@ -65,6 +65,18 @@ function initLoginModal() {
     });
   }
 
+  // Password visibility toggle
+  const passwordInput = document.getElementById("password");
+  const eyeIcon = document.getElementById("eye-icon");
+  const togglePasswordButton = document.getElementById("toggle-password");
+  togglePasswordButton?.addEventListener("click", () => {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    eyeIcon.innerHTML = isPassword
+      ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-6.94M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 3-3M1 1l22 22" />'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />';
+  });
+
   // Login form submission
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
