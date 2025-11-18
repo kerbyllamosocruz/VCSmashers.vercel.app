@@ -2,6 +2,9 @@
 session_start();
 require_once "config/config.php";
 
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOGIN_COOLDOWN_SECONDS = 30;
+
 $error = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -9,58 +12,87 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $password = trim($_POST["password"] ?? "");
 
   $response = ["success" => false, "message" => "An error occurred."];
+  $now = time();
+  $lockoutUntil = (int)($_SESSION["login_lockout_until"] ?? 0);
+  $attempts = (int)($_SESSION["login_attempts"] ?? 0);
 
-  if (empty($email) || empty($password)) {
-    $response["message"] = "Please fill in all fields.";
-  } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $response["message"] = "Invalid email format.";
+  if ($lockoutUntil > $now) {
+    $remaining = $lockoutUntil - $now;
+    $response["message"] = "Too many login attempts. Try again in {$remaining} seconds.";
+    $response["lockoutRemaining"] = $remaining;
   } else {
-    $stmt = $conn->prepare("SELECT user_id, pass, name, phone, profile_pic FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
-
-    if ($stmt->num_rows > 0) {
-      $stmt->bind_result($userId, $hashedPassword, $name, $phone, $profilePic);
-      $stmt->fetch();
-
-      if (password_verify($password, $hashedPassword)) {
-        // Fetch role_id
-        $role_stmt = $conn->prepare("SELECT role_id FROM users WHERE user_id = ?");
-        $role_stmt->bind_param("i", $userId);
-        $role_stmt->execute();
-        $role_stmt->bind_result($roleId);
-        $role_stmt->fetch();
-        $role_stmt->close();
-
-        $_SESSION["user_id"] = $userId;
-        $_SESSION["email"] = $email;
-        $_SESSION["name"] = $name;
-        $_SESSION["role_id"] = $roleId;
-        if (!empty($phone)) {
-          $_SESSION["phone"] = $phone;
-        }
-        if (!empty($profilePic)) {
-          $_SESSION["profile_pic"] = $profilePic;
-        } else {
-          unset($_SESSION["profile_pic"]);
-        }
-
-        $response["success"] = true;
-
-        if ($roleId == 1) {
-          $_SESSION["admin_logged_in"] = true;
-        }
-
-        $response["redirect"] = "index.php";
-      } else {
-        $response["message"] = "Invalid password.";
-      }
-    } else {
-      $response["message"] = "No account found with that email.";
+    if ($lockoutUntil && $lockoutUntil <= $now) {
+      $_SESSION["login_attempts"] = 0;
+      $_SESSION["login_lockout_until"] = 0;
+      $attempts = 0;
     }
 
-    $stmt->close();
+    if (empty($email) || empty($password)) {
+      $response["message"] = "Please fill in all fields.";
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+      $response["message"] = "Invalid email format.";
+    } else {
+      $stmt = $conn->prepare("SELECT user_id, pass, name, phone, profile_pic FROM users WHERE email = ?");
+      $stmt->bind_param("s", $email);
+      $stmt->execute();
+      $stmt->store_result();
+
+      if ($stmt->num_rows > 0) {
+        $stmt->bind_result($userId, $hashedPassword, $name, $phone, $profilePic);
+        $stmt->fetch();
+
+        if (password_verify($password, $hashedPassword)) {
+          // Fetch role_id
+          $role_stmt = $conn->prepare("SELECT role_id FROM users WHERE user_id = ?");
+          $role_stmt->bind_param("i", $userId);
+          $role_stmt->execute();
+          $role_stmt->bind_result($roleId);
+          $role_stmt->fetch();
+          $role_stmt->close();
+
+          $_SESSION["user_id"] = $userId;
+          $_SESSION["email"] = $email;
+          $_SESSION["name"] = $name;
+          $_SESSION["role_id"] = $roleId;
+          if (!empty($phone)) {
+            $_SESSION["phone"] = $phone;
+          }
+          if (!empty($profilePic)) {
+            $_SESSION["profile_pic"] = $profilePic;
+          } else {
+            unset($_SESSION["profile_pic"]);
+          }
+
+          $_SESSION["login_attempts"] = 0;
+          $_SESSION["login_lockout_until"] = 0;
+
+          $response["success"] = true;
+
+          if ($roleId == 1) {
+            $_SESSION["admin_logged_in"] = true;
+          }
+
+          $response["redirect"] = "index.php";
+        } else {
+          $response["message"] = "Invalid password.";
+          $attempts++;
+        }
+      } else {
+        $response["message"] = "No account found with that email.";
+        $attempts++;
+      }
+
+      $stmt->close();
+
+      $_SESSION["login_attempts"] = $attempts;
+
+      if ($attempts >= MAX_LOGIN_ATTEMPTS) {
+        $_SESSION["login_lockout_until"] = $now + LOGIN_COOLDOWN_SECONDS;
+        $remaining = $_SESSION["login_lockout_until"] - $now;
+        $response["message"] = "Too many login attempts. Try again in {$remaining} seconds.";
+        $response["lockoutRemaining"] = $remaining;
+      }
+    }
   }
 
   if (

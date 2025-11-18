@@ -185,9 +185,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const verifyOtpError = document.getElementById('verifyOtpError');
     const resetPasswordError = document.getElementById('resetPasswordError');
 
+    const closeLoginModal = () => {
+        if (typeof window.hideLoginModal === 'function') {
+            window.hideLoginModal();
+        } else {
+            loginModal.classList.add('modal-hidden');
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) loginForm.reset();
+            const loginError = document.getElementById('loginError');
+            if (loginError) loginError.textContent = '';
+        }
+    };
+
     forgotPasswordLink.addEventListener('click', (e) => {
         e.preventDefault();
-        loginModal.classList.add('modal-hidden');
+        closeLoginModal();
         forgotPasswordModal.classList.remove('modal-hidden');
     });
 
