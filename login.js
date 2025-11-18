@@ -55,7 +55,6 @@ function initLoginModal() {
     });
   });
 
-  // Close modal by clicking outside
   loginModal.addEventListener("click", (e) => {
     if (e.target === loginModal) loginModal.classList.add("modal-hidden");
   });
@@ -65,7 +64,6 @@ function initLoginModal() {
     });
   }
 
-  // Password visibility toggle
   const passwordInput = document.getElementById("password");
   const eyeIcon = document.getElementById("eye-icon");
   const togglePasswordButton = document.getElementById("toggle-password");
@@ -77,7 +75,6 @@ function initLoginModal() {
       : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />';
   });
 
-  // Login form submission
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -117,7 +114,6 @@ function initLoginModal() {
   }
 }
 
-// Initialize both forms when the DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   initLoginModal();
 });
