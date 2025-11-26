@@ -153,7 +153,7 @@ $maskedEmail = mask_email($userEmail);
         </div>
         <div>
           <label for="settings-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-          <input type="tel" id="settings-phone" name="phone" value="<?php echo htmlspecialchars($_SESSION['phone'] ?? ''); ?>" pattern="[0-9]{11}" maxlength="11" placeholder="e.g., 09123456789" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+          <input type="tel" id="settings-phone" name="phone" value="<?php echo htmlspecialchars($_SESSION['phone'] ?? ''); ?>" pattern="[0-9]{11}" maxlength="11" placeholder="e.g., 09123456789" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
         </div>
         <div>
           <label for="settings-profile-pic" class="block text-sm font-medium text-gray-700">Profile Picture</label>

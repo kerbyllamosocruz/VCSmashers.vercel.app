@@ -35,6 +35,17 @@ if ($result->num_rows > 0) {
     }
 }
 
+$upcoming_bookings = [];
+$past_bookings = [];
+
+foreach ($bookings as $booking) {
+    if (in_array($booking['status'], ['CONFIRMED', 'CANCELLED'])) {
+        $upcoming_bookings[] = $booking;
+    } elseif ($booking['status'] === 'COMPLETED') {
+        $past_bookings[] = $booking;
+    }
+}
+
 ?>
 
 
@@ -203,76 +214,86 @@ if ($result->num_rows > 0) {
 
         <!-- Upcoming Bookings -->
         <div id="upcoming-bookings" class="booking-tab-content mt-6 space-y-4 overflow-auto h-[400px] pr-2">
-            <?php foreach ($bookings as $booking): ?>
-              <?php if (in_array($booking['status'], ['CONFIRMED', 'CANCELLED'])): ?>
-                <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4">
-                  <div class="flex-grow">
-                    <p class="font-semibold text-lg text-accent"><?php echo htmlspecialchars($booking['title']); ?></p>
-                    <p class="text-sm text-gray-500"><?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time']))?></p>
-                    <?php if ($booking['status'] === 'CONFIRMED'): ?>
-                      <p class="text-sm text-green-600 font-medium mt-1 inline-flex items-center">
-                        <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clip-rule="evenodd"></path>
-                        </svg>
-                        Confirmed
-                      </p>  
-                    <?php elseif ($booking['status'] === 'CANCELLED'): ?>
-                      <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round"
-                            d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                        Cancelled
-                      </p>
-                    <?php endif; ?>
-                  </div>
-                  <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)"
-                      class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
-                      View Receipt
-                    </button>
-                    <?php if ($booking['status'] === 'CONFIRMED'): ?>
-                      <button
-                        class="w-full sm:w-auto text-center bg-red-100 text-red-700 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-red-200 cancel-booking-btn"
-                        data-booking-id="<?php echo htmlspecialchars($booking['booking_id']); ?>">
-                        Cancel
-                      </button>
-                    <?php endif; ?>
-                  </div>
+            <?php if (empty($upcoming_bookings)): ?>
+                <div class="flex flex-col items-center justify-center h-full py-10 text-center">
+                    <div class="bg-gray-100 p-4 rounded-full mb-3">
+                        <i data-feather="calendar" class="w-8 h-8 text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-600 font-medium text-lg">No upcoming bookings found.</p>
+                    <p class="text-gray-400 text-sm mb-4">Ready to play? Check the schedule!</p>
+                    <a href="schedule.php" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition">
+                        Book a Court
+                    </a>
                 </div>
-              <?php endif; ?>
-            <?php endforeach; ?>
+            <?php else: ?>
+                <?php foreach ($upcoming_bookings as $booking): ?>
+                    <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4">
+                        <div class="flex-grow">
+                            <p class="font-semibold text-lg text-accent"><?php echo htmlspecialchars($booking['title']); ?></p>
+                            <p class="text-sm text-gray-500"><?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time']))?></p>
+                            <?php if ($booking['status'] === 'CONFIRMED'): ?>
+                                <p class="text-sm text-green-600 font-medium mt-1 inline-flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Confirmed
+                                </p>
+                            <?php elseif ($booking['status'] === 'CANCELLED'): ?>
+                                <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
+                                    <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    </svg>
+                                    Cancelled
+                                </p>
+                            <?php endif; ?>
+                        </div>
+                        <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                            <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)" class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
+                                View Receipt
+                            </button>
+                            <?php if ($booking['status'] === 'CONFIRMED'): ?>
+                                <button class="w-full sm:w-auto text-center bg-red-100 text-red-700 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-red-200 cancel-booking-btn" data-booking-id="<?php echo htmlspecialchars($booking['booking_id']); ?>">
+                                    Cancel
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
+
 
         <!-- Past Bookings -->
         <div id="past-bookings" class="booking-tab-content mt-6 space-y-4 hidden overflow-auto h-[400px] pr-2">
-          <?php foreach ($bookings as $booking): ?>
-            <?php if ($booking['status'] === 'COMPLETED'): ?>
-              <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4 bg-gray-50">
-                <div class="flex-grow">
-                  <p class="font-semibold text-lg text-gray-600"><?php echo htmlspecialchars($booking['title']); ?></p>
-                  <p class="text-sm text-gray-500"><?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time']))?></p>
-                  <p class="text-sm text-gray-600 font-medium mt-1 inline-flex items-center">
-                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                      <path fill-rule="evenodd"
-                        d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z"
-                        clip-rule="evenodd"></path>
-                    </svg>
-                    Completed
-                  </p>
+            <?php if (empty($past_bookings)): ?>
+                <div class="flex flex-col items-center justify-center h-full py-10 text-center">
+                    <div class="bg-gray-100 p-4 rounded-full mb-3">
+                        <i data-feather="clock" class="w-8 h-8 text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500 font-medium">No past history found.</p>
                 </div>
-                <div class="flex-shrink-0">
-                  <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)"
-                    class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
-                    View Receipt
-                  </button>
-                </div>
-              </div>
+            <?php else: ?>
+                <?php foreach ($past_bookings as $booking): ?>
+                    <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4 bg-gray-50">
+                        <div class="flex-grow">
+                            <p class="font-semibold text-lg text-gray-600"><?php echo htmlspecialchars($booking['title']); ?></p>
+                            <p class="text-sm text-gray-500"><?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time']))?></p>
+                            <p class="text-sm text-gray-600 font-medium mt-1 inline-flex items-center">
+                                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                                </svg>
+                                Completed
+                            </p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)" class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
+                                View Receipt
+                            </button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
             <?php endif; ?>
-          <?php endforeach; ?>
         </div>
 
 

@@ -87,6 +87,7 @@
                     <i data-feather="x"></i>
                 </button>
             </div>
+            <label class="block text-sm font-medium text-gray-700 text-center">Please check your email for a message with your code. Your code is 6 numbers long.</label>
             <form id="forgotPasswordForm" class="space-y-4">
                 <div>
                     <label for="forgot_email" class="block text-sm font-medium text-gray-700">Email Address</label>
@@ -113,6 +114,7 @@
                     <i data-feather="x"></i>
                 </button>
             </div>
+            <label class="block text-sm font-medium text-gray-700 text-center">Please check your email for a message with your code. Your code is 6 numbers long.</label>
             <form id="verifyOtpForm" class="space-y-4">
                 <div>
                     <label for="otp" class="block text-sm font-medium text-gray-700">OTP</label>
