@@ -69,9 +69,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
           if ($roleId == 1) {
             $_SESSION["admin_logged_in"] = true;
+            $response["redirect"] = "admin/dashboard.php";
+          } else {
+            $response["redirect"] = "index.php";
           }
-
-          $response["redirect"] = "index.php";
         } else {
           $response["message"] = "Invalid password.";
           $attempts++;
