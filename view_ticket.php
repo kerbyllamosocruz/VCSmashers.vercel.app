@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Get current user's ID and role
-$current_user_id = (int)$_SESSION['user_id'];
+$current_user_id = (int) $_SESSION['user_id'];
 $current_user_role = $_SESSION['role_id'] ?? 2; // Default to regular user (2) if not set
 
 // Get booking ID and validate
@@ -25,9 +25,11 @@ $has_valid_token = false;
 
 if ($access_token && isset($_SESSION['receipt_access'])) {
     $stored = $_SESSION['receipt_access'];
-    if ($stored['token'] === $access_token && 
-        $stored['booking_id'] === $booking_id && 
-        $stored['expiry'] > time()) {
+    if (
+        $stored['token'] === $access_token &&
+        $stored['booking_id'] === $booking_id &&
+        $stored['expiry'] > time()
+    ) {
         $has_valid_token = true;
         // Clear the token after use
         unset($_SESSION['receipt_access']);
@@ -107,6 +109,7 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -114,25 +117,40 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body { font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+        body {
+            font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        }
+
         .receipt-container::before,
         .receipt-container::after {
             content: '';
             display: block;
             width: 100%;
             height: 15px;
-            background-image: linear-gradient(to right, #a0aec0 33%, rgba(255,255,255,0) 0%);
+            background-image: linear-gradient(to right, #a0aec0 33%, rgba(255, 255, 255, 0) 0%);
             background-position: bottom;
             background-size: 6px 2px;
             background-repeat: repeat-x;
             position: absolute;
             left: 0;
         }
-        .receipt-container::before { top: -10px; }
-        .receipt-container::after { bottom: -10px; }
-        @media print { .no-print { display:none; } }
+
+        .receipt-container::before {
+            top: -10px;
+        }
+
+        .receipt-container::after {
+            bottom: -10px;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+        }
     </style>
 </head>
+
 <body class="bg-gray-100 p-8">
     <div class="max-w-xl mx-auto">
         <div id="receipt-container" class="receipt-container relative mb-6">
@@ -175,15 +193,16 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
                     </div>
                     <div class="flex justify-between mb-1">
                         <span class="text-gray-600">Time:</span>
-                        <span class="font-bold"><?php echo htmlspecialchars($displayStartTime . ' - ' . $displayEndTime); ?></span>
+                        <span
+                            class="font-bold"><?php echo htmlspecialchars($displayStartTime . ' - ' . $displayEndTime); ?></span>
                     </div>
                     <div class="flex justify-between mb-1">
                         <span class="text-gray-600">Duration:</span>
-                        <span class="font-bold"><?php 
-                            $start = strtotime($booking['event_time'] ?? '');
-                            $end = strtotime($booking['event_end_time'] ?? '');
-                            $duration = round(($end - $start) / 3600); // Convert seconds to hours
-                            echo $duration . ' hour' . ($duration > 1 ? 's' : '');
+                        <span class="font-bold"><?php
+                        $start = strtotime($booking['event_time'] ?? '');
+                        $end = strtotime($booking['event_end_time'] ?? '');
+                        $duration = round(($end - $start) / 3600); // Convert seconds to hours
+                        echo $duration . ' hour' . ($duration > 1 ? 's' : '');
                         ?></span>
                     </div>
                 </div>
@@ -193,7 +212,8 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
                 <div class="mb-6">
                     <div class="flex justify-between items-center text-xl font-bold">
                         <span>Total Paid:</span>
-                        <span class="text-green-600">PHP <?php echo number_format((float)$booking['total_fee'], 2); ?></span>
+                        <span class="text-green-600">PHP
+                            <?php echo number_format((float) $booking['total_fee'], 2); ?></span>
                     </div>
                     <div class="flex justify-between items-center mt-2">
                         <span class="text-gray-600">Payment Method:</span>
@@ -203,7 +223,8 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
 
                 <div class="relative text-center">
                     <div class="absolute inset-0 flex items-center justify-center">
-                        <span class="text-6xl font-black text-green-500 opacity-20 transform -rotate-12 select-none">CONFIRMED</span>
+                        <span
+                            class="text-6xl font-black text-green-500 opacity-20 transform -rotate-12 select-none">CONFIRMED</span>
                     </div>
                     <p class="text-gray-500 italic">Thank you for your reservation!</p>
                 </div>
@@ -211,8 +232,10 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
         </div>
 
         <div class="no-print space-y-3">
-            <a href="profile_page.php" class="inline-block text-sm px-4 py-2 bg-gray-200 rounded">Back to Profile</a>
-            <button id="downloadBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">Download Receipt (PNG)</button>
+            <a href="schedule.php" class="inline-block text-sm px-4 py-2 bg-gray-200 rounded">Back to Schedule</a>
+            <button id="downloadBtn"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow-lg transition">Download
+                Receipt (PNG)</button>
         </div>
     </div>
 
@@ -244,4 +267,5 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
         });
     </script>
 </body>
+
 </html>
