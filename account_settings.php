@@ -145,7 +145,8 @@ $maskedEmail = mask_email($userEmail);
       <form action="update_profile.php" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label for="settings-name" class="block text-sm font-medium text-gray-700">Full Name</label>
-          <input type="text" id="settings-name" name="name" value="<?php echo htmlspecialchars($userName); ?>" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+          <input type="text" id="settings-name" name="name" value="<?php echo htmlspecialchars($userName); ?>" readonly class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+          <p class="text-xs text-gray-500 mt-1">Contact support to update your name.</p>
         </div>
         <div>
           <label for="settings-email" class="block text-sm font-medium text-gray-700">Email Address</label>

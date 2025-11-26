@@ -12,13 +12,12 @@ if (!isset($_SESSION["user_id"])) {
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
     // 3. Get and sanitize input data
-    $name = trim($_POST["name"]);
     $phone = trim($_POST["phone"]);
     $userId = $_SESSION["user_id"];
 
     // 4. Validate the data
-    if (empty($name) || empty($phone)) {
-        header("Location: profile_page.php?status=error&message=Name and phone cannot be empty.");
+    if (empty($phone)) {
+        header("Location: profile_page.php?status=error&message=Phone number cannot be empty.");
         exit();
     }
     
@@ -66,32 +65,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // 6. Prepare SQL statement (include profile pic if provided)
     if ($profilePath) {
-        $stmt = $conn->prepare("UPDATE users SET name = ?, phone = ?, profile_pic = ? WHERE user_id = ?");
+        $stmt = $conn->prepare("UPDATE users SET phone = ?, profile_pic = ? WHERE user_id = ?");
         if ($stmt === false) {
             // Attempt to add missing column then retry once
             if (strpos(strtolower($conn->error), 'unknown column') !== false) {
                 @$conn->query("ALTER TABLE users ADD COLUMN profile_pic VARCHAR(255) NULL");
-                $stmt = $conn->prepare("UPDATE users SET name = ?, phone = ?, profile_pic = ? WHERE user_id = ?");
+                $stmt = $conn->prepare("UPDATE users SET phone = ?, profile_pic = ? WHERE user_id = ?");
             }
         }
         if ($stmt === false) {
             header("Location: profile_page.php?status=error&message=" . urlencode("Database error: " . $conn->error));
             exit();
         }
-        $stmt->bind_param("sssi", $name, $phone, $profilePath, $userId);
+        $stmt->bind_param("ssi", $phone, $profilePath, $userId);
     } else {
-        $stmt = $conn->prepare("UPDATE users SET name = ?, phone = ? WHERE user_id = ?");
+        $stmt = $conn->prepare("UPDATE users SET phone = ? WHERE user_id = ?");
         if ($stmt === false) {
             header("Location: profile_page.php?status=error&message=" . urlencode("Database error: " . $conn->error));
             exit();
         }
-        $stmt->bind_param("ssi", $name, $phone, $userId);
+        $stmt->bind_param("si", $phone, $userId);
     }
 
     // 6. Execute the update and handle the result
     if ($stmt->execute()) {
         // 7. IMPORTANT: Update the session variables with the new data
-        $_SESSION["name"] = $name;
         $_SESSION["phone"] = $phone;
         if ($profilePath) {
             $_SESSION['profile_pic'] = $profilePath;
