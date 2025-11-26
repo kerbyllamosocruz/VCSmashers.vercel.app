@@ -207,7 +207,7 @@ foreach ($slots as $s) {
     $chk->execute();
     $res = $chk->get_result()->fetch_assoc();
     $chk->close();
-    if (!empty($res['c']) && (int)$res['c'] > 0) {
+    if (!empty($res['c']) && (int) $res['c'] > 0) {
         // Conflict detected; payed transaction already recorded. Log and abort creating bookings.
         // You may want to notify admins or refund the user in this case.
         // For now, skip creating bookings and continue to cleanup.
