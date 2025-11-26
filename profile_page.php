@@ -8,7 +8,6 @@ $userPhone = $_SESSION["phone"] ?? "";
 $status = $_GET['status'] ?? '';
 $message = $_GET['message'] ?? '';
 
-// First, update status of past bookings to COMPLETED
 $current_date = date('Y-m-d');
 $current_time = date('H:i:s');
 $update_sql = "UPDATE bookings 
@@ -21,7 +20,6 @@ $update_stmt->bind_param('sss', $current_date, $current_date, $current_time);
 $update_stmt->execute();
 
 $bookings = [];
-// Only show bookings for the current user and include booking_id
 $user_id = $_SESSION['user_id'] ?? 0;
 $sql = "SELECT booking_id, title, event_date, event_time, status FROM bookings WHERE user_id = ?";
 $stmt = $conn->prepare($sql);
@@ -30,20 +28,20 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $bookings[] = $row;
-    }
+  while ($row = $result->fetch_assoc()) {
+    $bookings[] = $row;
+  }
 }
 
 $upcoming_bookings = [];
 $past_bookings = [];
 
 foreach ($bookings as $booking) {
-    if (in_array($booking['status'], ['CONFIRMED', 'CANCELLED'])) {
-        $upcoming_bookings[] = $booking;
-    } elseif ($booking['status'] === 'COMPLETED') {
-        $past_bookings[] = $booking;
-    }
+  if (in_array($booking['status'], ['CONFIRMED', 'CANCELLED'])) {
+    $upcoming_bookings[] = $booking;
+  } elseif ($booking['status'] === 'COMPLETED') {
+    $past_bookings[] = $booking;
+  }
 }
 
 ?>
@@ -51,6 +49,7 @@ foreach ($bookings as $booking) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -64,43 +63,51 @@ foreach ($bookings as $booking) {
   <script src="https://unpkg.com/feather-icons"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <link rel="icon" type="image/x-icon" href="Assets/logo.png" />
-    <script src="script.js"></script>
-    <style>
+  <script src="script.js"></script>
+  <style>
     #receiptModal {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.5);
-        z-index: 1000;
-        overflow-y: auto;
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      overflow-y: auto;
     }
+
     #receiptModal.active {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .receipt-container::before,
     .receipt-container::after {
-        content: '';
-        display: block;
-        width: 100%;
-        height: 15px;
-        background-image: linear-gradient(to right, #a0aec0 33%, rgba(255,255,255,0) 0%);
-        background-position: bottom;
-        background-size: 6px 2px;
-        background-repeat: repeat-x;
-        position: absolute;
-        left: 0;
+      content: '';
+      display: block;
+      width: 100%;
+      height: 15px;
+      background-image: linear-gradient(to right, #a0aec0 33%, rgba(255, 255, 255, 0) 0%);
+      background-position: bottom;
+      background-size: 6px 2px;
+      background-repeat: repeat-x;
+      position: absolute;
+      left: 0;
     }
-    .receipt-container::before { top: -10px; }
-    .receipt-container::after { bottom: -10px; }
-    </style>
+
+    .receipt-container::before {
+      top: -10px;
+    }
+
+    .receipt-container::after {
+      bottom: -10px;
+    }
+  </style>
 </head>
 
-<body>  
+<body>
   <nav class="bg-primary shadow-lg">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-20">
@@ -110,20 +117,21 @@ foreach ($bookings as $booking) {
           </a>
         </div>
         <div class="hidden md:flex items-center space-x-8" id="nav-links">
-          <a href="index.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
+          <a href="index.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
           <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
-          
+          <a href="contact.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact
+            Us</a>
+
           <?php if (isset($_SESSION['user_id'])):
             ?>
-            <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">Profile</a>
+            <a href="profile_page.php"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">Profile</a>
           <?php else:
             ?>
-            <button id="loginBtn" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
+            <button id="loginBtn"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
           <?php endif;
           ?>
 
@@ -138,16 +146,22 @@ foreach ($bookings as $booking) {
     <!-- Mobile menu, show/hide based on menu state. -->
     <div class="md:hidden hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
-        <a href="index.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
-        <a href="schedule.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
-        <a href="faqs.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-        <a href="contact.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+        <a href="index.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
+        <a href="schedule.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
+        <a href="faqs.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
+        <a href="contact.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
         <?php if (isset($_SESSION['user_id'])):
           ?>
-          <a href="profile_page.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base underline font-bold">Profile</a>
+          <a href="profile_page.php"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base underline font-bold">Profile</a>
         <?php else:
           ?>
-          <button id="loginBtnMobile" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
+          <button id="loginBtnMobile"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
         <?php endif;
         ?>
       </div>
@@ -161,29 +175,32 @@ foreach ($bookings as $booking) {
   <div class="container mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
     <section class="lg:col-span-1 flex flex-col gap-y-8">
       <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-        <div class="w-24 h-24 mx-auto mb-3 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold text-2xl overflow-hidden">
+        <div
+          class="w-24 h-24 mx-auto mb-3 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold text-2xl overflow-hidden">
           <?php if (!empty($_SESSION['profile_pic'])): ?>
-            <img src="<?php echo htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Profile" class="w-full h-full object-cover">
+            <img src="<?php echo htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Profile"
+              class="w-full h-full object-cover">
           <?php else: ?>
             <?php echo strtoupper(substr($userName, 0, 1)); ?>
           <?php endif; ?>
         </div>
         <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($userName); ?></h3>
         <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($userEmail); ?></p>
-        <a href="account_settings.php" class="bg-primary text-white inline-block px-6 py-3 rounded-lg font-bold hover:bg-opacity-80 transition w-full text-center">Account Settings</a>
+        <a href="account_settings.php"
+          class="bg-primary text-white inline-block px-6 py-3 rounded-lg font-bold hover:bg-opacity-80 transition w-full text-center">Account
+          Settings</a>
       </div>
 
       <div class="bg-white p-6 rounded-lg shadow-lg">
         <h3 class="text-xl font-bold mb-4 text-left">Quick Links</h3>
         <ul class="space-y-2 text-left">
           <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
-          <li><a href="admin/dashboard.php" class="text-gray-700 hover:text-primary">Admin Dashboard</a></li>
+            <li><a href="admin/dashboard.php" class="text-gray-700 hover:text-primary">Admin Dashboard</a></li>
           <?php endif; ?>
           <li><a href="account_settings.php#profile" class="text-gray-700 hover:text-primary">Profile</a></li>
           <li><a href="account_settings.php#security" class="text-gray-700 hover:text-primary">Security</a></li>
           <li><a href="account_settings.php#preferences" class="text-gray-700 hover:text-primary">Preferences</a></li>
           <li><a href="account_settings.php#payments" class="text-gray-700 hover:text-primary">Payments</a></li>
-          <li><a href="account_settings.php#privacy" class="text-gray-700 hover:text-primary">Privacy</a></li>
           <li><a href="#booking-history" class="text-gray-700 hover:text-primary">Booking History</a></li>
           <li>
             <form action="logout.php" method="POST" style="margin:0;">
@@ -214,86 +231,100 @@ foreach ($bookings as $booking) {
 
         <!-- Upcoming Bookings -->
         <div id="upcoming-bookings" class="booking-tab-content mt-6 space-y-4 overflow-auto h-[400px] pr-2">
-            <?php if (empty($upcoming_bookings)): ?>
-                <div class="flex flex-col items-center justify-center h-full py-10 text-center">
-                    <div class="bg-gray-100 p-4 rounded-full mb-3">
-                        <i data-feather="calendar" class="w-8 h-8 text-gray-400"></i>
-                    </div>
-                    <p class="text-gray-600 font-medium text-lg">No upcoming bookings found.</p>
-                    <p class="text-gray-400 text-sm mb-4">Ready to play? Check the schedule!</p>
-                    <a href="schedule.php" class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition">
-                        Book a Court
-                    </a>
+          <?php if (empty($upcoming_bookings)): ?>
+            <div class="flex flex-col items-center justify-center h-full py-10 text-center">
+              <div class="bg-gray-100 p-4 rounded-full mb-3">
+                <i data-feather="calendar" class="w-8 h-8 text-gray-400"></i>
+              </div>
+              <p class="text-gray-600 font-medium text-lg">No upcoming bookings found.</p>
+              <p class="text-gray-400 text-sm mb-4">Ready to play? Check the schedule!</p>
+              <a href="schedule.php"
+                class="bg-primary text-white px-6 py-2 rounded-lg font-bold hover:bg-opacity-90 transition">
+                Book a Court
+              </a>
+            </div>
+          <?php else: ?>
+            <?php foreach ($upcoming_bookings as $booking): ?>
+              <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4">
+                <div class="flex-grow">
+                  <p class="font-semibold text-lg text-accent"><?php echo htmlspecialchars($booking['title']); ?></p>
+                  <p class="text-sm text-gray-500">
+                    <?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time'])) ?>
+                  </p>
+                  <?php if ($booking['status'] === 'CONFIRMED'): ?>
+                    <p class="text-sm text-green-600 font-medium mt-1 inline-flex items-center">
+                      <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clip-rule="evenodd"></path>
+                      </svg>
+                      Confirmed
+                    </p>
+                  <?php elseif ($booking['status'] === 'CANCELLED'): ?>
+                    <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
+                      <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                      </svg>
+                      Cancelled
+                    </p>
+                  <?php endif; ?>
                 </div>
-            <?php else: ?>
-                <?php foreach ($upcoming_bookings as $booking): ?>
-                    <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4">
-                        <div class="flex-grow">
-                            <p class="font-semibold text-lg text-accent"><?php echo htmlspecialchars($booking['title']); ?></p>
-                            <p class="text-sm text-gray-500"><?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time']))?></p>
-                            <?php if ($booking['status'] === 'CONFIRMED'): ?>
-                                <p class="text-sm text-green-600 font-medium mt-1 inline-flex items-center">
-                                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    Confirmed
-                                </p>
-                            <?php elseif ($booking['status'] === 'CANCELLED'): ?>
-                                <p class="text-sm text-red-600 font-medium mt-1 inline-flex items-center">
-                                    <svg class="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    Cancelled
-                                </p>
-                            <?php endif; ?>
-                        </div>
-                        <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                            <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)" class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
-                                View Receipt
-                            </button>
-                            <?php if ($booking['status'] === 'CONFIRMED'): ?>
-                                <button class="w-full sm:w-auto text-center bg-red-100 text-red-700 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-red-200 cancel-booking-btn" data-booking-id="<?php echo htmlspecialchars($booking['booking_id']); ?>">
-                                    Cancel
-                                </button>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                <div class="flex-shrink-0 flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                  <button onclick="viewReceipt(<?php echo (int) $booking['booking_id']; ?>)"
+                    class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
+                    View Receipt
+                  </button>
+                  <?php if ($booking['status'] === 'CONFIRMED'): ?>
+                    <button
+                      class="w-full sm:w-auto text-center bg-red-100 text-red-700 font-semibold text-sm py-2 px-4 rounded-lg hover:bg-red-200 cancel-booking-btn"
+                      data-booking-id="<?php echo htmlspecialchars($booking['booking_id']); ?>">
+                      Cancel
+                    </button>
+                  <?php endif; ?>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
 
 
         <!-- Past Bookings -->
         <div id="past-bookings" class="booking-tab-content mt-6 space-y-4 hidden overflow-auto h-[400px] pr-2">
-            <?php if (empty($past_bookings)): ?>
-                <div class="flex flex-col items-center justify-center h-full py-10 text-center">
-                    <div class="bg-gray-100 p-4 rounded-full mb-3">
-                        <i data-feather="clock" class="w-8 h-8 text-gray-400"></i>
-                    </div>
-                    <p class="text-gray-500 font-medium">No past history found.</p>
+          <?php if (empty($past_bookings)): ?>
+            <div class="flex flex-col items-center justify-center h-full py-10 text-center">
+              <div class="bg-gray-100 p-4 rounded-full mb-3">
+                <i data-feather="clock" class="w-8 h-8 text-gray-400"></i>
+              </div>
+              <p class="text-gray-500 font-medium">No past history found.</p>
+            </div>
+          <?php else: ?>
+            <?php foreach ($past_bookings as $booking): ?>
+              <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4 bg-gray-50">
+                <div class="flex-grow">
+                  <p class="font-semibold text-lg text-gray-600"><?php echo htmlspecialchars($booking['title']); ?></p>
+                  <p class="text-sm text-gray-500">
+                    <?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time'])) ?>
+                  </p>
+                  <p class="text-sm text-gray-600 font-medium mt-1 inline-flex items-center">
+                    <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                      <path fill-rule="evenodd"
+                        d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                    Completed
+                  </p>
                 </div>
-            <?php else: ?>
-                <?php foreach ($past_bookings as $booking): ?>
-                    <div class="border p-4 rounded-lg flex flex-col md:flex-row justify-between items-start gap-4 bg-gray-50">
-                        <div class="flex-grow">
-                            <p class="font-semibold text-lg text-gray-600"><?php echo htmlspecialchars($booking['title']); ?></p>
-                            <p class="text-sm text-gray-500"><?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time']))?></p>
-                            <p class="text-sm text-gray-600 font-medium mt-1 inline-flex items-center">
-                                <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
-                                </svg>
-                                Completed
-                            </p>
-                        </div>
-                        <div class="flex-shrink-0">
-                            <button onclick="viewReceipt(<?php echo (int)$booking['booking_id']; ?>)" class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
-                                View Receipt
-                            </button>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                <div class="flex-shrink-0">
+                  <button onclick="viewReceipt(<?php echo (int) $booking['booking_id']; ?>)"
+                    class="w-full sm:w-auto text-center bg-secondary text-primary font-semibold text-sm py-2 px-4 rounded-lg hover:bg-opacity-80">
+                    View Receipt
+                  </button>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
 
 
@@ -340,7 +371,8 @@ foreach ($bookings as $booking) {
             </a>
           </div>
           <div class="mt-4">
-            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">support@maysanbadmintoncourt.site</p>
+            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">
+              support@maysanbadmintoncourt.site</p>
             <p class="text-secondary">0915-865-3350</p>
           </div>
         </div>
@@ -404,8 +436,7 @@ foreach ($bookings as $booking) {
     function viewReceipt(bookingId) {
       const modal = document.getElementById('receiptModal');
       const content = document.getElementById('receiptContent');
-      
-      // Show loading state (skeleton placeholders without animation)
+
       content.innerHTML = `
         <div>
           <div class="h-4 bg-gray-200 rounded mb-2"></div>
@@ -413,10 +444,9 @@ foreach ($bookings as $booking) {
           <div class="h-4 bg-gray-200 rounded mb-2 w-1/2"></div>
         </div>
       `;
-      
+
       modal.classList.add('active');
 
-      // Fetch receipt data
       fetch(`fetch_receipt.php?booking_id=${bookingId}`)
         .then(response => response.json())
         .then(data => {
@@ -426,8 +456,7 @@ foreach ($bookings as $booking) {
           }
 
           currentReceiptData = data.receipt;
-          
-          // Render receipt content
+
           content.innerHTML = `
             <div class="mb-4">
               <div class="flex justify-between mb-1">
@@ -505,11 +534,11 @@ foreach ($bookings as $booking) {
       const receiptElement = document.getElementById('receipt');
       const downloadBtn = document.querySelector('#receiptModal button:last-child');
       const originalText = downloadBtn.innerHTML;
-      
+
       downloadBtn.innerHTML = 'Generating...';
       downloadBtn.disabled = true;
 
-      html2canvas(receiptElement, { 
+      html2canvas(receiptElement, {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff'
@@ -521,7 +550,7 @@ foreach ($bookings as $booking) {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
+
         downloadBtn.innerHTML = originalText;
         downloadBtn.disabled = false;
       }).catch(err => {
@@ -532,7 +561,6 @@ foreach ($bookings as $booking) {
       });
     }
 
-    // Close modal when clicking outside
     document.getElementById('receiptModal').addEventListener('click', (e) => {
       if (e.target.id === 'receiptModal') {
         closeReceiptModal();
@@ -553,5 +581,5 @@ foreach ($bookings as $booking) {
     feather.replace();
   </script>
 </body>
-</html>
 
+</html>

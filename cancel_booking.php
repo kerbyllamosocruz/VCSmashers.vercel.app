@@ -22,7 +22,6 @@ if (!$bookingId) {
     exit;
 }
 
-// Prepare and execute the update statement
 $stmt = $conn->prepare("UPDATE bookings SET status = 'CANCELLED' WHERE booking_id = ? AND user_id = ?");
 $stmt->bind_param("ii", $bookingId, $userId);
 

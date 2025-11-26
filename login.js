@@ -1,10 +1,16 @@
 function initLoginModal() {
   const loginModal = document.getElementById("loginModal");
   const registerModal = document.getElementById("registerModal");
-  const openLoginBtns = [document.getElementById("loginBtn"), document.getElementById("loginBtn2")].filter(Boolean);
+  const openLoginBtns = [
+    document.getElementById("loginBtn"),
+    document.getElementById("loginBtn2"),
+  ].filter(Boolean);
   const openRegisterLink = document.getElementById("openRegisterModal");
   const backToLoginLink = document.getElementById("backToLogin");
-  const closeBtns = [document.getElementById("closeModal"), document.getElementById("closeRegisterModal")].filter(Boolean);
+  const closeBtns = [
+    document.getElementById("closeModal"),
+    document.getElementById("closeRegisterModal"),
+  ].filter(Boolean);
   const loginForm = document.getElementById("loginForm");
   const errorEl = document.getElementById("loginError");
   const signInBtn = document.getElementById("signinBtn");
@@ -29,11 +35,16 @@ function initLoginModal() {
 
   if (!loginModal) return;
 
-  const getStoredAttempts = () => parseInt(localStorage.getItem(STORAGE_KEYS.attempts) || "0", 10);
-  const setStoredAttempts = (value) => localStorage.setItem(STORAGE_KEYS.attempts, String(value));
-  const clearStoredAttempts = () => localStorage.removeItem(STORAGE_KEYS.attempts);
-  const getCooldownUntil = () => parseInt(localStorage.getItem(STORAGE_KEYS.cooldown) || "0", 10);
-  const setCooldownUntil = (timestamp) => localStorage.setItem(STORAGE_KEYS.cooldown, String(timestamp));
+  const getStoredAttempts = () =>
+    parseInt(localStorage.getItem(STORAGE_KEYS.attempts) || "0", 10);
+  const setStoredAttempts = (value) =>
+    localStorage.setItem(STORAGE_KEYS.attempts, String(value));
+  const clearStoredAttempts = () =>
+    localStorage.removeItem(STORAGE_KEYS.attempts);
+  const getCooldownUntil = () =>
+    parseInt(localStorage.getItem(STORAGE_KEYS.cooldown) || "0", 10);
+  const setCooldownUntil = (timestamp) =>
+    localStorage.setItem(STORAGE_KEYS.cooldown, String(timestamp));
   const clearCooldown = () => localStorage.removeItem(STORAGE_KEYS.cooldown);
 
   const remainingCooldown = () => Math.max(0, getCooldownUntil() - Date.now());
@@ -62,7 +73,11 @@ function initLoginModal() {
       cooldownTimer = setTimeout(updateCooldownState, 1_000);
     } else {
       toggleFormDisabled(false);
-      if (errorEl && errorEl.textContent && errorEl.textContent.includes("Too many login attempts")) {
+      if (
+        errorEl &&
+        errorEl.textContent &&
+        errorEl.textContent.includes("Too many login attempts")
+      ) {
         errorEl.textContent = "";
       }
       if (cooldownTimer) {
@@ -128,7 +143,9 @@ function initLoginModal() {
   };
 
   openLoginBtns.forEach((btn) => {
-    btn.addEventListener("click", () => loginModal.classList.remove("modal-hidden"));
+    btn.addEventListener("click", () =>
+      loginModal.classList.remove("modal-hidden")
+    );
   });
 
   if (openRegisterLink) {
@@ -147,7 +164,6 @@ function initLoginModal() {
     });
   }
 
-  // Close modals
   closeBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       hideLoginModal();
@@ -167,7 +183,9 @@ function initLoginModal() {
   togglePasswordButton?.addEventListener("click", () => {
     const isPassword = passwordInput.type === "password";
     passwordInput.type = isPassword ? "text" : "password";
-    eyeIcon.innerHTML = isPassword ? eyeIconMarkup.hidden : eyeIconMarkup.default;
+    eyeIcon.innerHTML = isPassword
+      ? eyeIconMarkup.hidden
+      : eyeIconMarkup.default;
   });
 
   updateCooldownState();
@@ -214,7 +232,8 @@ function initLoginModal() {
         } else {
           const text = await res.text();
           console.error("Unexpected login response:", res.status, text);
-          errorEl.textContent = "Server error — check console (see network tab).";
+          errorEl.textContent =
+            "Server error — check console (see network tab).";
           recordFailedAttempt();
         }
       } catch (err) {

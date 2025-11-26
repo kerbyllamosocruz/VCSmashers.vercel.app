@@ -1,6 +1,11 @@
 <?php
 session_start();
 require_once "config/config.php";
+
+$restoreData = null;
+if (isset($_GET['payment_cancelled']) && $_GET['payment_cancelled'] == '1' && isset($_SESSION['pending_booking'])) {
+    $restoreData = $_SESSION['pending_booking'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -60,16 +65,23 @@ require_once "config/config.php";
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="md:hidden hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
-                <a href="index.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
-                <a href="schedule.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline">Schedule</a>
-                <a href="faqs.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-                <a href="contact.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+                <a href="index.php"
+                    class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
+                <a href="schedule.php"
+                    class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline">Schedule</a>
+                <a href="faqs.php"
+                    class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
+                <a href="contact.php"
+                    class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact
+                    Us</a>
                 <?php if (isset($_SESSION['user_id'])):
                     ?>
-                    <a href="profile_page.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Profile</a>
+                    <a href="profile_page.php"
+                        class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Profile</a>
                 <?php else:
                     ?>
-                    <button id="loginBtnMobile" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
+                    <button id="loginBtnMobile"
+                        class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -125,9 +137,12 @@ require_once "config/config.php";
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Legal</h4>
                     <ul class="space-y-2">
-                        <li><a href="terms.php" class="text-secondary hover:text-white transition">Terms of Service</a></li>
-                        <li><a href="privacy.php" class="text-secondary hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="cookies.php" class="text-secondary hover:text-white transition">Cookie Policy</a></li>
+                        <li><a href="terms.php" class="text-secondary hover:text-white transition">Terms of Service</a>
+                        </li>
+                        <li><a href="privacy.php" class="text-secondary hover:text-white transition">Privacy Policy</a>
+                        </li>
+                        <li><a href="cookies.php" class="text-secondary hover:text-white transition">Cookie Policy</a>
+                        </li>
                     </ul>
                 </div>
                 <div>
@@ -167,13 +182,55 @@ require_once "config/config.php";
         });
 
         feather.replace();
-        // Expose login state to JS
         window.IS_LOGGED_IN = <?php echo isset($_SESSION['user_id']) ? 'true' : 'false'; ?>;
+        window.RESTORE_BOOKING_DATA = <?php echo $restoreData ? json_encode($restoreData) : 'null'; ?>;
     </script>
     <script src="schedule.js"></script>
     <script>
-        // Make showTicketModal globally accessible
-        window.showTicketModal = function(bookingId) {
+        if (window.RESTORE_BOOKING_DATA) {
+            const data = window.RESTORE_BOOKING_DATA;
+            console.log('Restoring booking data:', data);
+
+            const modal = document.getElementById('bookingModal');
+            const form = document.getElementById('bookingForm');
+
+            if (modal && form) {
+                if (data.title) document.getElementById('title').value = data.title;
+                if (data.description) document.getElementById('description').value = data.description;
+                if (data.activity_name) document.getElementById('activity_name').value = data.activity_name;
+                if (data.num_of_participants) document.getElementById('num_of_participants').value = data.num_of_participants;
+                if (data.event_date) document.getElementById('event_date').value = data.event_date;
+                if (data.event_time) document.getElementById('event_time').value = data.event_time;
+                if (data.court_number) document.getElementById('court_number').value = data.court_number;
+
+                const startTime = data.event_time;
+                const endTimeSelect = document.getElementById('event_end_time');
+
+                if (startTime && endTimeSelect) {
+                    endTimeSelect.innerHTML = '<option value="">Select end time</option>';
+                    const [startH, startM] = startTime.split(':').map(Number);
+                    let currentH = startH + 1;
+                    for (let i = 0; i < 5; i++) {
+                        if (currentH > 22) break;
+                        const timeStr = `${currentH.toString().padStart(2, '0')}:00:00`;
+                        const option = document.createElement('option');
+                        option.value = timeStr;
+                        option.textContent = `${currentH.toString().padStart(2, '0')}:00`;
+                        endTimeSelect.appendChild(option);
+                        currentH++;
+                    }
+                    if (data.event_end_time) {
+                        endTimeSelect.value = data.event_end_time;
+                    }
+                }
+
+                modal.classList.remove('hidden');
+                modal.classList.remove('modal-hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        window.showTicketModal = function (bookingId) {
             const modal = document.getElementById('ticketModal');
             if (!modal) {
                 console.error('Ticket modal not found');
@@ -181,7 +238,6 @@ require_once "config/config.php";
             }
             const content = document.getElementById('ticketModalContent');
 
-            // Show loading state
             content.innerHTML = `
                 <div class="flex items-center justify-center p-8">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -196,18 +252,15 @@ require_once "config/config.php";
                 modal.querySelector('.modal-content').classList.add('scale-100');
             });
 
-            // Get access token from URL if present
             const urlParams = new URLSearchParams(window.location.search);
             const accessToken = urlParams.get('access_token');
 
-            // Fetch ticket content with access token if available
             const url = new URL('fetch_receipt.php', window.location.href);
             url.searchParams.set('booking_id', bookingId);
             if (accessToken) {
                 url.searchParams.set('access_token', accessToken);
             }
 
-            // Add debug parameter
             url.searchParams.set('debug', '1');
 
             console.log('Fetching receipt with URL:', url.toString());
@@ -215,7 +268,7 @@ require_once "config/config.php";
             fetch(url)
                 .then(res => res.json())
                 .then(data => {
-                    console.log('Receipt response:', data); // Add debug logging
+                    console.log('Receipt response:', data);
                     if (data.success && data.receipt) {
                         const r = data.receipt;
                         content.innerHTML = `
@@ -320,7 +373,7 @@ require_once "config/config.php";
                 });
         }
 
-        window.closeTicketModal = function() {
+        window.closeTicketModal = function () {
             const modal = document.getElementById('ticketModal');
             modal.classList.add('opacity-0');
             modal.querySelector('.modal-content').classList.remove('scale-100');
@@ -331,14 +384,12 @@ require_once "config/config.php";
             }, 300);
         }
 
-        // Close on background click
         document.getElementById('ticketModal').addEventListener('click', (e) => {
             if (e.target.id === 'ticketModal') {
                 closeTicketModal();
             }
         });
 
-        // Show ticket modal if URL has booking_id and show_ticket parameters
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('booking_id') && urlParams.has('show_ticket')) {
             showTicketModal(urlParams.get('booking_id'));

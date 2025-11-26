@@ -15,18 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $timezone = $_POST['timezone'] ?? 'Asia/Manila';
   $timeWindow = $_POST['time_window'] ?? 'any';
 
-  // Persist to session immediately for UX
   $_SESSION['pref_notify_email'] = $notifyEmail;
   $_SESSION['pref_notify_sms'] = $notifySms;
   $_SESSION['pref_language'] = $language;
   $_SESSION['pref_timezone'] = $timezone;
   $_SESSION['pref_time_window'] = $timeWindow;
 
-  // Optional DB storage if table exists
   $sql = "UPDATE users SET pref_notify_email=?, pref_notify_sms=?, pref_language=?, pref_timezone=?, pref_time_window=? WHERE user_id=?";
   $stmt = $conn->prepare($sql);
   if ($stmt === false) {
-    // Try to add columns then retry
     @$conn->query("ALTER TABLE users ADD COLUMN pref_notify_email TINYINT(1) DEFAULT 1");
     @$conn->query("ALTER TABLE users ADD COLUMN pref_notify_sms TINYINT(1) DEFAULT 0");
     @$conn->query("ALTER TABLE users ADD COLUMN pref_language VARCHAR(10) DEFAULT 'en'");
@@ -48,6 +45,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 header("Location: profile_page.php");
 exit();
 ?>
-
-
-

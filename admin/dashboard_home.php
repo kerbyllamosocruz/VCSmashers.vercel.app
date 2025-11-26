@@ -1,19 +1,15 @@
 <?php
 require_once "../config/config.php";
 
-// Total Bookings
 $total_bookings_result = $conn->query("SELECT COUNT(*) as count FROM bookings");
 $total_bookings = $total_bookings_result->fetch_assoc()['count'];
 
-// Total Users
 $total_users_result = $conn->query("SELECT COUNT(*) as count FROM users");
 $total_users = $total_users_result->fetch_assoc()['count'];
 
-// Total Revenue
 $total_revenue_result = $conn->query("SELECT SUM(total_fee) as total FROM bookings WHERE status = 'COMPLETED'");
 $total_revenue = $total_revenue_result->fetch_assoc()['total'];
 
-// Booking activity - last 14 days (fill zeros for missing days)
 $days = [];
 for ($i = 13; $i >= 0; $i--) {
     $d = date('Y-m-d', strtotime("-{$i} days"));
@@ -22,13 +18,12 @@ for ($i = 13; $i >= 0; $i--) {
 $day_res = $conn->query("SELECT DATE(event_date) as dt, COUNT(*) as cnt FROM bookings WHERE event_date >= CURDATE() - INTERVAL 13 DAY GROUP BY dt ORDER BY dt");
 if ($day_res) {
     while ($r = $day_res->fetch_assoc()) {
-        $days[$r['dt']] = (int)$r['cnt'];
+        $days[$r['dt']] = (int) $r['cnt'];
     }
 }
 $bookings_days_labels = array_keys($days);
 $bookings_days_data = array_values($days);
 
-// Booking activity - last 12 months
 $months = [];
 for ($i = 11; $i >= 0; $i--) {
     $m = date('Y-m', strtotime("-{$i} months"));
@@ -37,22 +32,21 @@ for ($i = 11; $i >= 0; $i--) {
 $month_res = $conn->query("SELECT DATE_FORMAT(event_date, '%Y-%m') as ym, COUNT(*) as cnt FROM bookings WHERE event_date >= DATE_FORMAT(CURDATE() - INTERVAL 11 MONTH, '%Y-%m-01') GROUP BY ym ORDER BY ym");
 if ($month_res) {
     while ($r = $month_res->fetch_assoc()) {
-        $months[$r['ym']] = (int)$r['cnt'];
+        $months[$r['ym']] = (int) $r['cnt'];
     }
 }
 $bookings_months_labels = array_keys($months);
 $bookings_months_data = array_values($months);
 
-// Court utilization (exclude cancelled bookings)
 $courts = [1 => 0, 2 => 0, 3 => 0];
 $court_res = $conn->query("SELECT court_number, COUNT(*) as cnt FROM bookings WHERE status != 'CANCELLED' GROUP BY court_number");
 if ($court_res) {
     while ($r = $court_res->fetch_assoc()) {
-        $num = (int)$r['court_number'];
+        $num = (int) $r['court_number'];
         if (isset($courts[$num])) {
-            $courts[$num] = (int)$r['cnt'];
+            $courts[$num] = (int) $r['cnt'];
         } else {
-            $courts[$num] = (int)$r['cnt'];
+            $courts[$num] = (int) $r['cnt'];
         }
     }
 }
@@ -78,7 +72,6 @@ $court_data = array_values($courts);
     </div>
 </div>
 
-<!-- Charts -->
 <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-bold text-accent mb-4">Booking Activity (Last 14 days)</h3>
@@ -94,14 +87,11 @@ $court_data = array_values($courts);
     </div>
 </div>
 
-<!-- Chart.js (pinned version) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
-<!-- html2canvas + jsPDF for client-side PDF export -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <link rel="icon" type="image/x-icon" href="../Assets/logo.png" />
 <script>
-    // Raw data from PHP
     const rawDays = <?php echo json_encode($bookings_days_labels); ?>;
     const daysData = <?php echo json_encode($bookings_days_data); ?>;
     const rawMonths = <?php echo json_encode($bookings_months_labels); ?>;
@@ -185,7 +175,6 @@ $court_data = array_values($courts);
         }
     });
 
-    // Court utilization (doughnut)
     const ctxCourt = document.getElementById('courtUtilizationChart').getContext('2d');
     new Chart(ctxCourt, {
         type: 'doughnut',
@@ -223,7 +212,6 @@ $court_data = array_values($courts);
         }
     });
 
-    // Bookings per month (bar)
     const ctxMonths = document.getElementById('bookingsMonthlyChart').getContext('2d');
     new Chart(ctxMonths, {
         type: 'bar',
@@ -296,7 +284,7 @@ $court_data = array_values($courts);
 </div>
 
 <script>
-    document.getElementById('exportCsvBtn').addEventListener('click', function() {
+    document.getElementById('exportCsvBtn').addEventListener('click', function () {
         const from = document.getElementById('report_from').value;
         const to = document.getElementById('report_to').value;
         const status = document.getElementById('report_status').value;
@@ -305,12 +293,10 @@ $court_data = array_values($courts);
         if (to) params.set('to', to);
         if (status) params.set('status', status);
         params.set('format', 'csv');
-        // navigate to the CSV download
         window.location = 'export_reservations.php?' + params.toString();
     });
 
-    // Export PDF: fetch JSON and render table, then convert to PDF via html2canvas + jsPDF
-    document.getElementById('exportPdfBtn').addEventListener('click', async function() {
+    document.getElementById('exportPdfBtn').addEventListener('click', async function () {
         const from = document.getElementById('report_from').value;
         const to = document.getElementById('report_to').value;
         const status = document.getElementById('report_status').value;
@@ -326,7 +312,6 @@ $court_data = array_values($courts);
         }
         const data = await res.json();
 
-        // Build a table element
         const container = document.createElement('div');
         container.style.padding = '20px';
         container.style.background = '#fff';

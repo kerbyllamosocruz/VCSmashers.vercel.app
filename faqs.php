@@ -7,9 +7,9 @@ $sql = "SELECT question, answer FROM faqs";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $faqs[] = $row;
-    }
+  while ($row = $result->fetch_assoc()) {
+    $faqs[] = $row;
+  }
 }
 
 $conn->close();
@@ -44,20 +44,22 @@ $conn->close();
           </a>
         </div>
         <div class="hidden md:flex items-center space-x-8" id="nav-links">
-          <a href="index.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
+          <a href="index.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
           <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
-          <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">FAQs</a>
-          <a href="contact.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
-          
+          <a href="faqs.php"
+            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold underline transition">FAQs</a>
+          <a href="contact.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact
+            Us</a>
+
           <?php if (isset($_SESSION['user_id'])):
             ?>
-            <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
+            <a href="profile_page.php"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
           <?php else:
             ?>
-            <button id="loginBtn" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
+            <button id="loginBtn"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
           <?php endif;
           ?>
 
@@ -72,16 +74,22 @@ $conn->close();
     <!-- Mobile menu, show/hide based on menu state. -->
     <div class="md:hidden hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
-        <a href="index.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
-        <a href="schedule.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
-        <a href="faqs.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline transition">FAQs</a>
-        <a href="contact.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+        <a href="index.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
+        <a href="schedule.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
+        <a href="faqs.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline transition">FAQs</a>
+        <a href="contact.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
         <?php if (isset($_SESSION['user_id'])):
           ?>
-          <a href="profile_page.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Profile</a>
+          <a href="profile_page.php"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Profile</a>
         <?php else:
           ?>
-          <button id="loginBtnMobile" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
+          <button id="loginBtnMobile"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
         <?php endif;
         ?>
       </div>
@@ -91,7 +99,8 @@ $conn->close();
   <section class="bg-gradient-to-b from-primary to-accent text-white py-20">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h1 class="text-4xl md:text-5xl font-bold mb-6">Frequently Asked Questions</h1>
-      <p class="text-[18px] mb-8 font-gotu">Find answers to common questions about our court, bookings, and amenities.</p>
+      <p class="text-[18px] mb-8 font-gotu">Find answers to common questions about our court, bookings, and amenities.
+      </p>
     </div>
   </section>
 
@@ -100,15 +109,15 @@ $conn->close();
       <div class="space-y-4">
 
         <?php foreach ($faqs as $faq): ?>
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-          <button class="w-full text-left flex justify-between items-center accordion-button">
-            <h3 class="text-xl font-bold text-black"><?php echo htmlspecialchars($faq['question']); ?></h3>
-            <i data-feather="chevron-down" class="transition-transform duration-300 text-primary"></i>
-          </button>
-          <div class="mt-4 hidden accordion-content">
-            <p class="text-gray-700"><?php echo htmlspecialchars($faq['answer']); ?></p>
+          <div class="bg-white p-6 rounded-lg shadow-lg">
+            <button class="w-full text-left flex justify-between items-center accordion-button">
+              <h3 class="text-xl font-bold text-black"><?php echo htmlspecialchars($faq['question']); ?></h3>
+              <i data-feather="chevron-down" class="transition-transform duration-300 text-primary"></i>
+            </button>
+            <div class="mt-4 hidden accordion-content">
+              <p class="text-gray-700"><?php echo htmlspecialchars($faq['answer']); ?></p>
+            </div>
           </div>
-        </div>
         <?php endforeach; ?>
 
       </div>
@@ -154,7 +163,8 @@ $conn->close();
             </a>
           </div>
           <div class="mt-4">
-            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">support@maysanbadmintoncourt.site</p>
+            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">
+              support@maysanbadmintoncourt.site</p>
             <p class="text-secondary">0915-865-3350</p>
           </div>
         </div>
@@ -165,7 +175,7 @@ $conn->close();
       </div>
     </div>
   </footer>
-    <script>
+  <script>
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
 

@@ -13,8 +13,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
   $response = ["success" => false, "message" => "An error occurred."];
   $now = time();
-  $lockoutUntil = (int)($_SESSION["login_lockout_until"] ?? 0);
-  $attempts = (int)($_SESSION["login_attempts"] ?? 0);
+  $lockoutUntil = (int) ($_SESSION["login_lockout_until"] ?? 0);
+  $attempts = (int) ($_SESSION["login_attempts"] ?? 0);
 
   if ($lockoutUntil > $now) {
     $remaining = $lockoutUntil - $now;
@@ -42,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt->fetch();
 
         if (password_verify($password, $hashedPassword)) {
-          // Fetch role_id
           $role_stmt = $conn->prepare("SELECT role_id FROM users WHERE user_id = ?");
           $role_stmt->bind_param("i", $userId);
           $role_stmt->execute();
@@ -147,13 +146,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
           <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+          <a href="contact.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact
+            Us</a>
 
           <?php if (isset($_SESSION['user_id'])): ?>
-            <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
+            <a href="profile_page.php"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
           <?php else: ?>
-            <button id="loginBtn" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
+            <button id="loginBtn"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
           <?php endif; ?>
 
         </div>
@@ -167,14 +168,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <!-- Mobile menu, show/hide based on menu state. -->
     <div class="md:hidden hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
-        <a href="index.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline transition">Home</a>
-        <a href="schedule.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
-        <a href="faqs.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-        <a href="contact.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+        <a href="index.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline transition">Home</a>
+        <a href="schedule.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
+        <a href="faqs.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
+        <a href="contact.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
         <?php if (isset($_SESSION['user_id'])): ?>
-          <a href="profile_page.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Profile</a>
+          <a href="profile_page.php"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Profile</a>
         <?php else: ?>
-          <button id="loginBtnMobile" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
+          <button id="loginBtnMobile"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
         <?php endif; ?>
       </div>
     </div>
@@ -196,9 +203,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </a>
 
             <?php if (isset($_SESSION['user_id'])): ?>
-              <a href="profile_page.php" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Profile</a>
+              <a href="profile_page.php"
+                class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Profile</a>
             <?php else: ?>
-              <button id="loginBtn2" class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Book Now</button>
+              <button id="loginBtn2"
+                class="bg-transparent border-2 border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:text-primary transition">Book
+                Now</button>
             <?php endif; ?>
 
           </div>
@@ -310,7 +320,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </a>
           </div>
           <div class="mt-4">
-            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">support@maysanbadmintoncourt.site</p>
+            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">
+              support@maysanbadmintoncourt.site</p>
             <p class="text-secondary">0915-865-3350</p>
           </div>
         </div>

@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $name  = isset($_POST["name"]) ? trim($_POST["name"]) : '';
+    $name = isset($_POST["name"]) ? trim($_POST["name"]) : '';
     $email = isset($_POST["email"]) ? trim($_POST["email"]) : '';
     $phone = isset($_POST["phone"]) ? trim($_POST["phone"]) : '';
     $password_raw = isset($_POST["pass"]) ? $_POST["pass"] : (isset($_POST["password"]) ? $_POST["password"] : '');
@@ -28,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // Check existing email
     $check = $conn->prepare("SELECT email FROM users WHERE email = ?");
     $check->bind_param("s", $email);
     $check->execute();
@@ -40,10 +39,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     $check->close();
 
-    // Generate OTP
+    //  OTP
     $otp = rand(100000, 999999);
 
-    // Store user data and OTP in session
     $_SESSION['registration_data'] = [
         'name' => $name,
         'email' => $email,
@@ -53,26 +51,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $_SESSION['otp'] = $otp;
     $_SESSION['otp_time'] = time();
 
-    // Send OTP email
     $mail = new PHPMailer(true);
     try {
-        //Server settings
         $mail->isSMTP();
-        $mail->Host       = SMTP_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = SMTP_USERNAME;
-        $mail->Password   = SMTP_PASSWORD;
+        $mail->Host = SMTP_HOST;
+        $mail->SMTPAuth = true;
+        $mail->Username = SMTP_USERNAME;
+        $mail->Password = SMTP_PASSWORD;
         $mail->SMTPSecure = SMTP_SECURE;
-        $mail->Port       = SMTP_PORT;
+        $mail->Port = SMTP_PORT;
 
-        //Recipients
         $mail->setFrom('noreply@redsoiltradinghardware.store', 'Maysan Badminton Court');
         $mail->addAddress($email, $name);
 
-        //Content
         $mail->isHTML(true);
         $mail->Subject = 'Your OTP for Registration';
-        $mail->Body    = "Your OTP is: <b>$otp</b>. It will expire in 10 minutes.";
+        $mail->Body = "Your OTP is: <b>$otp</b>. It will expire in 10 minutes.";
 
         $mail->send();
         echo json_encode(["status" => "success", "message" => "An OTP has been sent to your email."]);

@@ -499,7 +499,6 @@ $maskedEmail = mask_email($userEmail);
         const id = (location.hash || '#profile').substring(1);
         showSection(id);
       });
-      // Mobile menu toggle compatibility, mirroring profile_page.php
       const menu = document.getElementById('mobile-menu');
       const navLinks = document.getElementById('nav-links');
       if (menu && navLinks) {

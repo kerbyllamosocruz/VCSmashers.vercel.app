@@ -2,24 +2,19 @@
 session_start();
 require_once __DIR__ . '/config/config.php';
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: index.php");
     exit;
 }
-
-// Get current user's ID and role
 $current_user_id = (int) $_SESSION['user_id'];
-$current_user_role = $_SESSION['role_id'] ?? 2; // Default to regular user (2) if not set
+$current_user_role = $_SESSION['role_id'] ?? 2;
 
-// Get booking ID and validate
 $booking_id = isset($_GET['booking_id']) ? (int) $_GET['booking_id'] : 0;
 if (!$booking_id) {
     header("Location: profile_page.php");
     exit;
 }
 
-// Validate access token if provided
 $access_token = $_GET['access_token'] ?? '';
 $has_valid_token = false;
 
@@ -31,12 +26,10 @@ if ($access_token && isset($_SESSION['receipt_access'])) {
         $stored['expiry'] > time()
     ) {
         $has_valid_token = true;
-        // Clear the token after use
         unset($_SESSION['receipt_access']);
     }
 }
 
-// Fetch booking details (assumes bookings table has `booking_id` primary key)
 $stmt = $conn->prepare("SELECT booking_id, user_id, title, description, activity_name, court_number, num_of_participants, fee_per_head, total_fee, event_date, event_time, event_end_time, status FROM bookings WHERE booking_id = ? LIMIT 1");
 if (!$stmt) {
     echo "<p style='padding:20px;'>Database error: could not prepare statement.</p>";
@@ -53,17 +46,12 @@ if (!$booking) {
     exit;
 }
 
-// Check if user has permission to view this receipt
-// Allow if: 
-// 1. User has valid access token from payment success, OR
-// 2. User is an admin (role_id = 1), OR
-// 3. User owns this booking
+
 if (!$has_valid_token && $current_user_role !== 1 && $booking['user_id'] !== $current_user_id) {
     header("Location: profile_page.php?error=unauthorized");
     exit;
 }
 
-// Fetch user info if available
 $customerName = $_SESSION['name'] ?? '';
 $customerEmail = $_SESSION['email'] ?? '';
 $customerPhone = '';
@@ -83,15 +71,12 @@ if (!empty($booking['user_id'])) {
     }
 }
 
-// Small helper to format date/time
 $displayDate = date('d-M-Y', strtotime($booking['event_date'] ?? ''));
 $displayStartTime = date('g:i A', strtotime($booking['event_time'] ?? ''));
 $displayEndTime = date('g:i A', strtotime($booking['event_end_time'] ?? ''));
 
-// Look up the most recent transaction for this user/email with matching amount (best-effort)
 $transactionId = 'N/A';
 if (!empty($customerEmail) && isset($booking['total_fee'])) {
-    // Try to find matching transaction by email and amount
     $t = $conn->prepare("SELECT payment_intent_id FROM transactions WHERE email = ? AND amount = ? LIMIT 1");
     if ($t) {
         $amount = (float) $booking['total_fee'];
@@ -105,7 +90,6 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
     }
 }
 
-// Render the receipt page (simple, printable, and downloadable via html2canvas)
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -201,7 +185,7 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
                         <span class="font-bold"><?php
                         $start = strtotime($booking['event_time'] ?? '');
                         $end = strtotime($booking['event_end_time'] ?? '');
-                        $duration = round(($end - $start) / 3600); // Convert seconds to hours
+                        $duration = round(($end - $start) / 3600);
                         echo $duration . ' hour' . ($duration > 1 ? 's' : '');
                         ?></span>
                     </div>
@@ -247,7 +231,6 @@ if (!empty($customerEmail) && isset($booking['total_fee'])) {
             const original = downloadBtn.innerHTML;
             downloadBtn.innerHTML = 'Generating...';
             downloadBtn.disabled = true;
-            // Use html2canvas to capture the receipt
             html2canvas(receiptElement, { scale: 2, useCORS: true }).then(canvas => {
                 const dataUrl = canvas.toDataURL('image/png');
                 const link = document.createElement('a');

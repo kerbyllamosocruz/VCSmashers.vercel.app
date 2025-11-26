@@ -16,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // OTP expiry check (10 minutes)
     if (time() - $_SESSION['otp_time'] > 600) {
         echo json_encode(["status" => "error", "message" => "OTP has expired. Please request a new one."]);
         unset($_SESSION['otp']);

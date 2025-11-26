@@ -2,7 +2,6 @@
 session_start();
 require_once "config/MongoSecretKey.php";
 
-//$secretKey = getenv('PAYMONGO_SECRET');
 if (!$secretKey) {
     $paymentConfigPath = __DIR__ . '/config/payment.php';
     if (file_exists($paymentConfigPath)) {
@@ -19,7 +18,6 @@ if (!$secretKey) {
 
 $ref = $_GET['ref'] ?? null;
 $sessionId = $_GET['id'] ?? $_GET['checkout_session_id'] ?? ($_SESSION['checkout_session_id'] ?? null);
-// If session id missing, attempt to load via ref file
 if (!$sessionId && $ref) {
     $tmpFile = __DIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'pending_' . basename($ref) . '.json';
     if (is_file($tmpFile)) {
@@ -37,7 +35,6 @@ if (!$sessionId) {
     exit;
 }
 
-// Verify Checkout Session status
 $ch = curl_init('https://api.paymongo.com/v1/checkout_sessions/' . urlencode($sessionId));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
@@ -56,13 +53,10 @@ if ($response === false || $statusCode < 200 || $statusCode >= 300) {
 $data = json_decode($response, true);
 $attributes = $data['data']['attributes'] ?? [];
 
-// Consider multiple sources of truth for a successful payment
 $paid = false;
-// 1) Checkout session status (some versions return 'paid' or 'completed')
 if (isset($attributes['status']) && in_array($attributes['status'], ['paid', 'succeeded', 'completed'])) {
     $paid = true;
 }
-// 2) Any captured/paid payment in the payments array
 if (!$paid && isset($attributes['payments']) && is_array($attributes['payments'])) {
     foreach ($attributes['payments'] as $p) {
         $pa = $p['attributes'] ?? [];
@@ -81,16 +75,13 @@ if (!$paid) {
     exit;
 }
 
-// Mark payment verified and save booking
 $_SESSION['payment_verified'] = true;
 
-// Persist successful transaction to DB
 require_once __DIR__ . '/config/config.php';
 
 $status = $attributes['status'] ?? 'paid';
 $payments = $attributes['payments'] ?? [];
 
-// Try to extract payment_intent_id from the first payment, else fallback to session id
 $paymentIntentId = null;
 if (is_array($payments) && !empty($payments)) {
     $firstPayment = $payments[0] ?? [];
@@ -105,13 +96,10 @@ if (!$paymentIntentId) {
     $paymentIntentId = $data['data']['id'] ?? $sessionId;
 }
 
-// Amount from PayMongo if available; it is in centavos
 $amount = null;
 if (isset($attributes['amount_total'])) {
     $amount = ((float) $attributes['amount_total']) / 100.0;
 }
-
-// Fallback amount from pending booking (server-side computation)
 if ($amount === null && isset($_SESSION['pending_booking'])) {
     $activityName = $_SESSION['pending_booking']['activity_name'] ?? '';
     $numParticipants = (int) ($_SESSION['pending_booking']['num_of_participants'] ?? 1);
@@ -131,7 +119,6 @@ if (isset($_SESSION['pending_booking'])) {
     $description = trim(($an ? ($an . ' ') : '') . ($np ? ('x' . $np) : '')) ?: 'Court Booking';
 }
 
-// Fetch user details for transaction (fallback to session name/email if available)
 $txName = $_SESSION['name'] ?? '';
 $txEmail = $_SESSION['email'] ?? '';
 $txContact = '';
@@ -163,12 +150,9 @@ if (!isset($_SESSION['pending_booking'])) {
     exit;
 }
 
-// Rehydrate session user if present in pending payload
 if (isset($_SESSION['pending_booking']['user_id']) && $_SESSION['pending_booking']['user_id']) {
     $_SESSION['user_id'] = (int) $_SESSION['pending_booking']['user_id'];
 }
-
-// Directly create the booking here as CONFIRMED to avoid relying on JSON saver
 $user_id = isset($_SESSION['user_id']) ? (int) $_SESSION['user_id'] : 0;
 $title = $_SESSION['pending_booking']['title'] ?? '';
 $description = $_SESSION['pending_booking']['description'] ?? '';
@@ -187,7 +171,6 @@ $fee_per_head = match ($activity_name) {
 $total_fee = $fee_per_head * $num_of_participants;
 $statusBooking = 'CONFIRMED';
 
-// Build list of hourly slots to reserve
 $slots = [];
 if (!empty($event_end_time) && strtotime($event_end_time) > strtotime($event_time)) {
     $t = strtotime($event_time);
@@ -200,7 +183,6 @@ if (!empty($event_end_time) && strtotime($event_end_time) > strtotime($event_tim
     $slots[] = $event_time;
 }
 
-// Optional: check conflicts before inserting (if any slot already booked, abort)
 foreach ($slots as $s) {
     $chk = $conn->prepare("SELECT COUNT(*) AS c FROM bookings WHERE event_date = ? AND court_number = ? AND event_time = ? AND status IN ('PENDING','CONFIRMED')");
     $chk->bind_param("sis", $event_date, $court_number, $s);
@@ -216,7 +198,6 @@ foreach ($slots as $s) {
     }
 }
 
-// Insert each slot as its own booking row
 $conn->begin_transaction();
 $insert = $conn->prepare("INSERT INTO bookings (user_id, title, description, activity_name, court_number, num_of_participants, fee_per_head, total_fee, event_date, event_time, event_end_time, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 if ($insert) {
@@ -231,7 +212,7 @@ if ($insert) {
             break;
         }
         if ($booking_id === 0) {
-            $booking_id = $conn->insert_id; // Get the ID of the first booking
+            $booking_id = $conn->insert_id;
         }
     }
     if ($ok) {
@@ -242,7 +223,6 @@ if ($insert) {
     $insert->close();
 }
 
-// Cleanup
 unset($_SESSION['payment_verified'], $_SESSION['pending_booking'], $_SESSION['payment_initiated'], $_SESSION['checkout_session_id']);
 if (!empty($ref)) {
     $tmpFile = __DIR__ . DIRECTORY_SEPARATOR . 'tmp' . DIRECTORY_SEPARATOR . 'pending_' . basename($ref) . '.json';
@@ -251,18 +231,14 @@ if (!empty($ref)) {
     }
 }
 
-// Generate one-time access token for viewing the receipt
 $access_token = bin2hex(random_bytes(32));
-$token_expiry = time() + 300; // Token valid for 5 minutes
-
-// Store token in session
+$token_expiry = time() + 300;
 $_SESSION['receipt_access'] = [
     'token' => $access_token,
     'booking_id' => $booking_id,
     'expiry' => $token_expiry
 ];
 
-// Redirect to view ticket/receipt
 $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');

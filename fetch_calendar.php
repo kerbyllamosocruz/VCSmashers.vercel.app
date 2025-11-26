@@ -1,27 +1,22 @@
 <?php
-$month = isset($_GET['month']) ? (int)$_GET['month'] : date('n');
-$year = isset($_GET['year']) ? (int)$_GET['year'] : date('Y');
+$month = isset($_GET['month']) ? (int) $_GET['month'] : date('n');
+$year = isset($_GET['year']) ? (int) $_GET['year'] : date('Y');
 
-// Calculate the date limit (1 year from today)
 $today = new DateTime();
 $maxDate = clone $today;
 $maxDate->modify('+1 year');
 
-// If we're within 10 days of next month, extend by one more month
-$daysUntilNextMonth = (int)$today->format('t') - (int)$today->format('j');
+$daysUntilNextMonth = (int) $today->format('t') - (int) $today->format('j');
 if ($daysUntilNextMonth < 10) {
-    $maxDate->modify('+1 month');
+  $maxDate->modify('+1 month');
 }
 
-$maxMonth = (int)$maxDate->format('n');
-$maxYear = (int)$maxDate->format('Y');
+$maxMonth = (int) $maxDate->format('n');
+$maxYear = (int) $maxDate->format('Y');
 
-// Check if we can navigate to previous month
 $prevMonth = $month - 1 <= 0 ? 12 : $month - 1;
 $prevYear = $month - 1 <= 0 ? $year - 1 : $year;
 $canGoPrev = ($prevYear > date('Y')) || ($prevYear == date('Y') && $prevMonth >= date('n'));
-
-// Check if we can navigate to next month
 $nextMonth = $month + 1 > 12 ? 1 : $month + 1;
 $nextYear = $month + 1 > 12 ? $year + 1 : $year;
 $canGoNext = ($nextYear < $maxYear) || ($nextYear == $maxYear && $nextMonth <= $maxMonth);
@@ -36,27 +31,25 @@ $startDayOfWeek = date('w', $firstDayOfMonth);
   <h2 class="text-2xl font-bold text-primary"><?= $monthName . " " . $year ?></h2>
   <div class="flex space-x-2">
     <?php if ($canGoPrev): ?>
-    <button data-nav data-month="<?= $prevMonth ?>"
-      data-year="<?= $prevYear ?>"
-      class="p-2 rounded-full hover:bg-secondary transition">
-      <i data-feather="chevron-left" class="text-primary"></i>
-    </button>
+      <button data-nav data-month="<?= $prevMonth ?>" data-year="<?= $prevYear ?>"
+        class="p-2 rounded-full hover:bg-secondary transition">
+        <i data-feather="chevron-left" class="text-primary"></i>
+      </button>
     <?php else: ?>
-    <button disabled class="p-2 rounded-full opacity-30 cursor-not-allowed">
-      <i data-feather="chevron-left" class="text-gray-400"></i>
-    </button>
+      <button disabled class="p-2 rounded-full opacity-30 cursor-not-allowed">
+        <i data-feather="chevron-left" class="text-gray-400"></i>
+      </button>
     <?php endif; ?>
 
     <?php if ($canGoNext): ?>
-    <button data-nav data-month="<?= $nextMonth ?>"
-      data-year="<?= $nextYear ?>"
-      class="p-2 rounded-full hover:bg-secondary transition">
-      <i data-feather="chevron-right" class="text-primary"></i>
-    </button>
+      <button data-nav data-month="<?= $nextMonth ?>" data-year="<?= $nextYear ?>"
+        class="p-2 rounded-full hover:bg-secondary transition">
+        <i data-feather="chevron-right" class="text-primary"></i>
+      </button>
     <?php else: ?>
-    <button disabled class="p-2 rounded-full opacity-30 cursor-not-allowed">
-      <i data-feather="chevron-right" class="text-gray-400"></i>
-    </button>
+      <button disabled class="p-2 rounded-full opacity-30 cursor-not-allowed">
+        <i data-feather="chevron-right" class="text-gray-400"></i>
+      </button>
     <?php endif; ?>
   </div>
 </div>
@@ -82,7 +75,7 @@ $startDayOfWeek = date('w', $firstDayOfMonth);
     $isPastDate = $dateValue < date('Y-m-d');
 
     $classes = 'calendar-day py-3 border border-gray-300 ';
-    
+
     if ($isPastDate) {
       $classes .= 'bg-gray-200 text-gray-400 cursor-not-allowed';
     } else if ($isToday) {
@@ -91,10 +84,10 @@ $startDayOfWeek = date('w', $firstDayOfMonth);
       $classes .= 'cursor-pointer bg-secondary/30 hover:bg-primary hover:text-white';
     }
 
-    echo '<div data-date="' . $dateValue . '" ' . 
-         ($isPastDate ? 'data-disabled="true"' : '') . 
-         ' class="' . $classes . '">' . 
-         $day . '</div>';
+    echo '<div data-date="' . $dateValue . '" ' .
+      ($isPastDate ? 'data-disabled="true"' : '') .
+      ' class="' . $classes . '">' .
+      $day . '</div>';
   }
   ?>
 </div>
