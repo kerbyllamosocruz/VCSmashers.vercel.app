@@ -3,20 +3,26 @@ session_start();
 $userName = $_SESSION["name"] ?? "Guest";
 $userEmail = $_SESSION["email"] ?? "Unknown";
 $userPhone = $_SESSION["phone"] ?? "";
-$status = $_GET['status'] ?? '';
-$message = $_GET['message'] ?? '';
+$status = $_GET["status"] ?? "";
+$message = $_GET["message"] ?? "";
 
 function mask_email($email)
 {
-  if (!$email || strpos($email, '@') === false) {
+  if (!$email || strpos($email, "@") === false) {
     return $email;
   }
-  [$local, $domain] = explode('@', $email, 2);
+  [$local, $domain] = explode("@", $email, 2);
   if (strlen($local) <= 2) {
-    return substr($local, 0, 1) . str_repeat('*', max(0, strlen($local) - 1)) . '@' . $domain;
+    return substr($local, 0, 1) .
+      str_repeat("*", max(0, strlen($local) - 1)) .
+      "@" .
+      $domain;
   }
-  $maskedLocal = substr($local, 0, 1) . str_repeat('*', strlen($local) - 2) . substr($local, -1);
-  return $maskedLocal . '@' . $domain;
+  $maskedLocal =
+    substr($local, 0, 1) .
+    str_repeat("*", strlen($local) - 2) .
+    substr($local, -1);
+  return $maskedLocal . "@" . $domain;
 }
 
 $maskedEmail = mask_email($userEmail);
@@ -24,13 +30,15 @@ $maskedEmail = mask_email($userEmail);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Account Settings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Gotu&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Gotu&family=Montserrat:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/feather-icons"></script>
@@ -38,6 +46,7 @@ $maskedEmail = mask_email($userEmail);
   <link rel="icon" type="image/x-icon" href="Assets/logo.png" />
   <script src="script.js"></script>
 </head>
+
 <body>
   <nav class="bg-primary shadow-lg">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,22 +57,20 @@ $maskedEmail = mask_email($userEmail);
           </a>
         </div>
         <div class="hidden md:flex items-center space-x-8" id="nav-links">
-          <a href="index.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
+          <a href="index.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Home</a>
           <a href="schedule.php"
             class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Schedule</a>
           <a href="faqs.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-          <a href="contact.php"
-            class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
-          
-          <?php if (isset($_SESSION['user_id'])):
-            ?>
-            <a href="profile_page.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
-          <?php else:
-            ?>
-            <button id="loginBtn" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
-          <?php endif;
-          ?>
+          <a href="contact.php" class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Contact
+            Us</a>
+
+          <?php if (isset($_SESSION["user_id"])): ?>
+            <a href="profile_page.php"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Profile</a>
+          <?php else: ?>
+            <button id="loginBtn"
+              class="text-white hover:text-secondary px-3 py-2 rounded-md text-base font-bold">Login</button>
+          <?php endif; ?>
 
         </div>
         <div class="md:hidden flex items-center">
@@ -76,18 +83,21 @@ $maskedEmail = mask_email($userEmail);
     <!-- Mobile menu, show/hide based on menu state. -->
     <div class="md:hidden hidden" id="mobile-menu">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
-        <a href="index.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
-        <a href="schedule.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
-        <a href="faqs.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
-        <a href="contact.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
-        <?php if (isset($_SESSION['user_id'])):
-          ?>
-          <a href="profile_page.php" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline">Profile</a>
-        <?php else:
-          ?>
-          <button id="loginBtnMobile" class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
-        <?php endif;
-        ?>
+        <a href="index.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Home</a>
+        <a href="schedule.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Schedule</a>
+        <a href="faqs.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">FAQs</a>
+        <a href="contact.php"
+          class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Contact Us</a>
+        <?php if (isset($_SESSION["user_id"])): ?>
+          <a href="profile_page.php"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold underline">Profile</a>
+        <?php else: ?>
+          <button id="loginBtnMobile"
+            class="text-white hover:text-secondary block px-3 py-2 rounded-md text-base font-bold">Login</button>
+        <?php endif; ?>
       </div>
     </div>
   </nav>
@@ -98,8 +108,16 @@ $maskedEmail = mask_email($userEmail);
 
   <div class="container mx-auto p-4">
     <?php if ($status): ?>
-      <div class="mb-4 p-3 rounded-md text-white <?php echo $status === 'success' ? 'bg-green-600' : 'bg-red-600'; ?>">
-        <?php echo htmlspecialchars($message ?: ($status === 'success' ? 'Changes saved.' : 'There was a problem.')); ?>
+      <div class="mb-4 p-3 rounded-md text-white <?php echo $status ===
+        "success"
+        ? "bg-green-600"
+        : "bg-red-600"; ?>">
+        <?php echo htmlspecialchars(
+          $message ?:
+          ($status === "success"
+            ? "Changes saved."
+            : "There was a problem.")
+        ); ?>
       </div>
     <?php endif; ?>
 
@@ -107,16 +125,25 @@ $maskedEmail = mask_email($userEmail);
       <!-- Left Sidebar: Profile card + Quick Links -->
       <section class="lg:col-span-1 flex flex-col gap-y-8">
         <div class="bg-white p-6 rounded-lg shadow-lg text-center">
-          <div class="w-24 h-24 mx-auto mb-3 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold text-2xl overflow-hidden">
-            <?php if (!empty($_SESSION['profile_pic'])): ?>
-              <img src="<?php echo htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Profile" class="w-full h-full object-cover">
+          <div
+            class="w-24 h-24 mx-auto mb-3 rounded-full bg-gray-200 flex items-center justify-center text-primary font-bold text-2xl overflow-hidden">
+            <?php if (!empty($_SESSION["profile_pic"])): ?>
+              <img src="<?php echo htmlspecialchars(
+                $_SESSION["profile_pic"]
+              ); ?>" alt="Profile" class="w-full h-full object-cover">
             <?php else: ?>
               <?php echo strtoupper(substr($userName, 0, 1)); ?>
             <?php endif; ?>
           </div>
-          <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($userName); ?></h3>
-          <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($userEmail); ?></p>
-          <a href="#profile" class="bg-primary text-white inline-block px-6 py-3 rounded-lg font-bold hover:bg-opacity-80 transition w-full text-center">Account Settings</a>
+          <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars(
+            $userName
+          ); ?></h3>
+          <p class="text-gray-600 mb-4"><?php echo htmlspecialchars(
+            $userEmail
+          ); ?></p>
+          <a href="#profile"
+            class="bg-primary text-white inline-block px-6 py-3 rounded-lg font-bold hover:bg-opacity-80 transition w-full text-center">Account
+            Settings</a>
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -127,7 +154,8 @@ $maskedEmail = mask_email($userEmail);
             <li><a href="#preferences" class="text-gray-700 hover:text-primary">Preferences</a></li>
             <li><a href="#payments" class="text-gray-700 hover:text-primary">Payments</a></li>
             <li><a href="#privacy" class="text-gray-700 hover:text-primary">Privacy</a></li>
-            <li><a href="profile_page.php#booking-history" class="text-gray-700 hover:text-primary">Booking History</a></li>
+            <li><a href="profile_page.php#booking-history" class="text-gray-700 hover:text-primary">Booking History</a>
+            </li>
             <li>
               <form action="logout.php" method="POST" style="margin:0;">
                 <button type="submit" class="text-red-600 hover:text-red-800 font-bold">Log out</button>
@@ -140,135 +168,223 @@ $maskedEmail = mask_email($userEmail);
       <!-- Right Content: Settings sections -->
       <section class="lg:col-span-2 space-y-8">
 
-    <div id="profile" class="bg-white p-6 rounded-lg shadow-lg settings-section">
-      <h3 class="text-xl font-bold text-primary mb-4">Profile</h3>
-      <form action="update_profile.php" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label for="settings-name" class="block text-sm font-medium text-gray-700">Full Name</label>
-          <input type="text" id="settings-name" name="name" value="<?php echo htmlspecialchars($userName); ?>" readonly class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
-          <p class="text-xs text-gray-500 mt-1">Contact support to update your name.</p>
-        </div>
-        <div>
-          <label for="settings-email" class="block text-sm font-medium text-gray-700">Email Address</label>
-          <input type="email" id="settings-email" name="email" value="<?php echo htmlspecialchars($userEmail); ?>" readonly class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600" />
-        </div>
-        <div>
-          <label for="settings-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
-          <input type="tel" id="settings-phone" name="phone" value="<?php echo htmlspecialchars($_SESSION['phone'] ?? ''); ?>" pattern="[0-9]{11}" maxlength="11" placeholder="e.g., 09123456789" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
-        </div>
-        <div>
-          <label for="settings-profile-pic" class="block text-sm font-medium text-gray-700">Profile Picture</label>
-          <div class="flex items-center gap-4 mt-1">
-            <div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-primary font-bold">
-              <?php if (!empty($_SESSION['profile_pic'])): ?>
-                <img src="<?php echo htmlspecialchars($_SESSION['profile_pic']); ?>" alt="Profile" class="w-full h-full object-cover">
-              <?php else: ?>
-                <?php echo strtoupper(substr($userName, 0, 1)); ?>
-              <?php endif; ?>
+        <div id="profile" class="bg-white p-6 rounded-lg shadow-lg settings-section">
+          <h3 class="text-xl font-bold text-primary mb-4">Profile</h3>
+          <form action="update_profile.php" method="POST" enctype="multipart/form-data"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="settings-name" class="block text-sm font-medium text-gray-700">Full Name</label>
+              <input type="text" id="settings-name" name="name" value="<?php echo htmlspecialchars(
+                $userName
+              ); ?>" readonly
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600 cursor-not-allowed" />
+              <p class="text-xs text-gray-500 mt-1">Contact support to update your name.</p>
             </div>
-            <input type="file" id="settings-profile-pic" name="profile_pic" accept="image/*" />
+            <div>
+              <label for="settings-email" class="block text-sm font-medium text-gray-700">Email Address</label>
+              <input type="email" id="settings-email" name="email" value="<?php echo htmlspecialchars(
+                $userEmail
+              ); ?>" readonly
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600" />
+            </div>
+            <div>
+              <label for="settings-phone" class="block text-sm font-medium text-gray-700">Phone Number</label>
+              <input type="tel" id="settings-phone" name="phone" value="<?php echo htmlspecialchars(
+                $_SESSION["phone"] ?? ""
+              ); ?>" pattern="[0-9]{11}" maxlength="11" placeholder="e.g., 09123456789"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+            </div>
+            <div>
+              <label for="settings-profile-pic" class="block text-sm font-medium text-gray-700">Profile Picture</label>
+              <div class="flex items-center gap-4 mt-1">
+                <div
+                  class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden flex items-center justify-center text-primary font-bold">
+                  <?php if (!empty($_SESSION["profile_pic"])): ?>
+                    <img src="<?php echo htmlspecialchars(
+                      $_SESSION["profile_pic"]
+                    ); ?>" alt="Profile" class="w-full h-full object-cover">
+                  <?php else: ?>
+                    <?php echo strtoupper(substr($userName, 0, 1)); ?>
+                  <?php endif; ?>
+                </div>
+                <input type="file" id="settings-profile-pic" name="profile_pic" accept="image/*" />
+              </div>
+              <p class="text-xs text-gray-500 mt-1">Max 2MB. JPG/PNG only.</p>
+            </div>
+            <div class="md:col-span-2">
+              <button type="submit"
+                class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90">Save Changes</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="security" class="bg-white p-6 rounded-lg shadow-lg settings-section">
+          <h3 class="text-xl font-bold text-primary mb-4">Security</h3>
+          <div id="passwordChangeAlert" class="hidden mb-4 p-3 rounded-md text-sm"></div>
+          <form id="changePasswordForm" class="grid grid-cols-1 md:grid-cols-3 gap-6" data-masked-email="<?php echo htmlspecialchars(
+            $maskedEmail
+          ); ?>">
+            <div>
+              <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
+              <div class="relative">
+                <input type="password" id="current-password" name="current_password" required
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none pr-10" />
+                <button type="button"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-zinc-900 toggle-password"
+                  data-target="current-password">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
+              <div class="relative">
+                <input type="password" id="new-password" name="new_password" required minlength="6" maxlength="18"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none pr-10" />
+                <button type="button"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-zinc-900 toggle-password"
+                  data-target="new-password">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">6-18 characters.</p>
+            </div>
+            <div>
+              <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
+              <div class="relative">
+                <input type="password" id="confirm-password" name="confirm_password" required minlength="6"
+                  maxlength="18"
+                  class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none pr-10" />
+                <button type="button"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-500 hover:text-zinc-900 toggle-password"
+                  data-target="confirm-password">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                </button>
+              </div>
+              <p id="password-match-message" class="text-xs mt-1 h-4"></p>
+            </div>
+            <div class="md:col-span-3 flex flex-col gap-2">
+              <button type="button" id="requestPasswordOtpBtn"
+                class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90 transition">Change
+                Password</button>
+              <p class="text-xs text-gray-500">A 6-digit code will be sent to <?php echo htmlspecialchars(
+                $maskedEmail
+              ); ?>.</p>
+            </div>
+          </form>
+          <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 class="font-semibold mb-2">Two-Factor Authentication</h4>
+              <p class="text-sm text-gray-600 mb-3">Coming soon: Email code or authenticator app.</p>
+              <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 cursor-not-allowed">Set up</button>
+            </div>
+            <div>
+              <h4 class="font-semibold mb-2">Active Sessions</h4>
+              <p class="text-sm text-gray-600 mb-3">Review your logged-in devices.</p>
+              <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 cursor-not-allowed">Sign out all</button>
+            </div>
           </div>
-          <p class="text-xs text-gray-500 mt-1">Max 2MB. JPG/PNG only.</p>
         </div>
-        <div class="md:col-span-2">
-          <button type="submit" class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90">Save Changes</button>
-        </div>
-      </form>
-    </div>
 
-    <div id="security" class="bg-white p-6 rounded-lg shadow-lg settings-section">
-      <h3 class="text-xl font-bold text-primary mb-4">Security</h3>
-      <div id="passwordChangeAlert" class="hidden mb-4 p-3 rounded-md text-sm"></div>
-      <form id="changePasswordForm" class="grid grid-cols-1 md:grid-cols-3 gap-6" data-masked-email="<?php echo htmlspecialchars($maskedEmail); ?>">
-        <div>
-          <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
-          <input type="password" id="current-password" name="current_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
+        <div id="preferences" class="bg-white p-6 rounded-lg shadow-lg settings-section">
+          <h3 class="text-xl font-bold text-primary mb-4">Preferences</h3>
+          <form action="update_preferences.php" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="md:col-span-3">
+              <h4 class="font-semibold mb-2">Notifications</h4>
+              <label class="inline-flex items-center mr-6">
+                <input type="checkbox" name="notify_email" value="1" class="mr-2" <?php echo !empty(
+                  $_SESSION["pref_notify_email"]
+                )
+                  ? "checked"
+                  : ""; ?>> Email updates
+              </label>
+              <label class="inline-flex items-center">
+                <input type="checkbox" name="notify_sms" value="1" class="mr-2" <?php echo !empty(
+                  $_SESSION["pref_notify_sms"]
+                )
+                  ? "checked"
+                  : ""; ?>> SMS updates
+              </label>
+            </div>
+            <div>
+              <label for="language" class="block text-sm font-medium text-gray-700">Language</label>
+              <?php $lang = $_SESSION["pref_language"] ?? "en"; ?>
+              <select id="language" name="language"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                <option value="en" <?php echo $lang === "en"
+                  ? "selected"
+                  : ""; ?>>English</option>
+                <option value="fil" <?php echo $lang === "fil"
+                  ? "selected"
+                  : ""; ?>>Filipino</option>
+              </select>
+            </div>
+            <div>
+              <label for="timezone" class="block text-sm font-medium text-gray-700">Time Zone</label>
+              <?php $tz = $_SESSION["pref_timezone"] ?? "Asia/Manila"; ?>
+              <select id="timezone" name="timezone"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                <option value="Asia/Manila" <?php echo $tz === "Asia/Manila"
+                  ? "selected"
+                  : ""; ?>>Asia/Manila (GMT+8)
+                </option>
+                <option value="UTC" <?php echo $tz === "UTC"
+                  ? "selected"
+                  : ""; ?>>UTC</option>
+              </select>
+            </div>
+            <div>
+              <label for="time_window" class="block text-sm font-medium text-gray-700">Preferred Time Window</label>
+              <?php $tw = $_SESSION["pref_time_window"] ?? "any"; ?>
+              <select id="time_window" name="time_window"
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                <option value="any" <?php echo $tw === "any"
+                  ? "selected"
+                  : ""; ?>>Anytime</option>
+                <option value="morning" <?php echo $tw === "morning"
+                  ? "selected"
+                  : ""; ?>>Morning</option>
+                <option value="afternoon" <?php echo $tw === "afternoon"
+                  ? "selected"
+                  : ""; ?>>Afternoon</option>
+                <option value="evening" <?php echo $tw === "evening"
+                  ? "selected"
+                  : ""; ?>>Evening</option>
+              </select>
+            </div>
+            <div class="md:col-span-3">
+              <button type="submit"
+                class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90">Save
+                Preferences</button>
+            </div>
+          </form>
         </div>
-        <div>
-          <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
-          <input type="password" id="new-password" name="new_password" required minlength="6" maxlength="18" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
-          <p class="text-xs text-gray-500 mt-1">6-18 characters.</p>
-        </div>
-        <div>
-          <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-          <input type="password" id="confirm-password" name="confirm_password" required minlength="6" maxlength="18" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" />
-        </div>
-        <div class="md:col-span-3 flex flex-col gap-2">
-          <button type="button" id="requestPasswordOtpBtn" class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90 transition">Change Password</button>
-          <p class="text-xs text-gray-500">A 6-digit code will be sent to <?php echo htmlspecialchars($maskedEmail); ?>.</p>
-        </div>
-      </form>
-      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <h4 class="font-semibold mb-2">Two-Factor Authentication</h4>
-          <p class="text-sm text-gray-600 mb-3">Coming soon: Email code or authenticator app.</p>
-          <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 cursor-not-allowed">Set up</button>
-        </div>
-        <div>
-          <h4 class="font-semibold mb-2">Active Sessions</h4>
-          <p class="text-sm text-gray-600 mb-3">Review your logged-in devices.</p>
-          <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 cursor-not-allowed">Sign out all</button>
-        </div>
-      </div>
-    </div>
 
-    <div id="preferences" class="bg-white p-6 rounded-lg shadow-lg settings-section">
-      <h3 class="text-xl font-bold text-primary mb-4">Preferences</h3>
-      <form action="update_preferences.php" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="md:col-span-3">
-          <h4 class="font-semibold mb-2">Notifications</h4>
-          <label class="inline-flex items-center mr-6">
-            <input type="checkbox" name="notify_email" value="1" class="mr-2" <?php echo !empty($_SESSION['pref_notify_email']) ? 'checked' : ''; ?>> Email updates
-          </label>
-          <label class="inline-flex items-center">
-            <input type="checkbox" name="notify_sms" value="1" class="mr-2" <?php echo !empty($_SESSION['pref_notify_sms']) ? 'checked' : ''; ?>> SMS updates
-          </label>
+        <div id="payments" class="bg-white p-6 rounded-lg shadow-lg settings-section">
+          <h3 class="text-xl font-bold text-primary mb-2">Payments</h3>
+          <p class="text-gray-600">Saved payment methods and billing receipts — coming soon.</p>
         </div>
-        <div>
-          <label for="language" class="block text-sm font-medium text-gray-700">Language</label>
-          <?php $lang = $_SESSION['pref_language'] ?? 'en'; ?>
-          <select id="language" name="language" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
-            <option value="en" <?php echo $lang==='en'?'selected':''; ?>>English</option>
-            <option value="fil" <?php echo $lang==='fil'?'selected':''; ?>>Filipino</option>
-          </select>
-        </div>
-        <div>
-          <label for="timezone" class="block text-sm font-medium text-gray-700">Time Zone</label>
-          <?php $tz = $_SESSION['pref_timezone'] ?? 'Asia/Manila'; ?>
-          <select id="timezone" name="timezone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
-            <option value="Asia/Manila" <?php echo $tz==='Asia/Manila'?'selected':''; ?>>Asia/Manila (GMT+8)</option>
-            <option value="UTC" <?php echo $tz==='UTC'?'selected':''; ?>>UTC</option>
-          </select>
-        </div>
-        <div>
-          <label for="time_window" class="block text-sm font-medium text-gray-700">Preferred Time Window</label>
-          <?php $tw = $_SESSION['pref_time_window'] ?? 'any'; ?>
-          <select id="time_window" name="time_window" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
-            <option value="any" <?php echo $tw==='any'?'selected':''; ?>>Anytime</option>
-            <option value="morning" <?php echo $tw==='morning'?'selected':''; ?>>Morning</option>
-            <option value="afternoon" <?php echo $tw==='afternoon'?'selected':''; ?>>Afternoon</option>
-            <option value="evening" <?php echo $tw==='evening'?'selected':''; ?>>Evening</option>
-          </select>
-        </div>
-        <div class="md:col-span-3">
-          <button type="submit" class="bg-primary text-white px-6 py-2 rounded-md font-bold hover:bg-opacity-90">Save Preferences</button>
-        </div>
-      </form>
-    </div>
 
-    <div id="payments" class="bg-white p-6 rounded-lg shadow-lg settings-section">
-      <h3 class="text-xl font-bold text-primary mb-2">Payments</h3>
-      <p class="text-gray-600">Saved payment methods and billing receipts — coming soon.</p>
-    </div>
-
-    <div id="privacy" class="bg-white p-6 rounded-lg shadow-lg settings-section">
-      <h3 class="text-xl font-bold text-primary mb-2">Privacy</h3>
-      <ul class="list-disc pl-6 text-gray-700">
-        <li>Data visibility controls — coming soon.</li>
-        <li>Download my data — coming soon.</li>
-        <li>Deactivate/Delete account — coming soon.</li>
-      </ul>
-    </div>
+        <div id="privacy" class="bg-white p-6 rounded-lg shadow-lg settings-section">
+          <h3 class="text-xl font-bold text-primary mb-2">Privacy</h3>
+          <ul class="list-disc pl-6 text-gray-700">
+            <li>Data visibility controls — coming soon.</li>
+            <li>Download my data — coming soon.</li>
+            <li>Deactivate/Delete account — coming soon.</li>
+          </ul>
+        </div>
 
       </section>
     </div>
@@ -286,17 +402,23 @@ $maskedEmail = mask_email($userEmail);
       <form id="passwordOtpForm" class="space-y-4">
         <div>
           <label for="password-otp" class="block text-sm font-medium text-gray-700">OTP Code</label>
-          <input type="text" id="password-otp" name="otp" pattern="[0-9]{6}" maxlength="6" minlength="6" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" placeholder="123456" inputmode="numeric" required />
+          <input type="text" id="password-otp" name="otp" pattern="[0-9]{6}" maxlength="6" minlength="6"
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none"
+            placeholder="123456" inputmode="numeric" required />
         </div>
         <div class="flex gap-3">
-          <button type="submit" class="flex-1 bg-primary text-white px-4 py-2 rounded-md font-bold hover:bg-opacity-90 transition">Confirm Password Change</button>
-          <button type="button" class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition" data-close-password-otp>Cancel</button>
+          <button type="submit"
+            class="flex-1 bg-primary text-white px-4 py-2 rounded-md font-bold hover:bg-opacity-90 transition">Confirm
+            Password Change</button>
+          <button type="button"
+            class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 transition"
+            data-close-password-otp>Cancel</button>
         </div>
       </form>
     </div>
   </div>
 
-  <?php include 'modals.php'; ?>
+  <?php include "modals.php"; ?>
   <footer class="bg-[#232067] text-white py-12">
     <div class="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-4 gap-8 text-center md:text-left">
@@ -326,7 +448,8 @@ $maskedEmail = mask_email($userEmail);
         <div>
           <h4 class="text-lg font-semibold mb-4">Connect</h4>
           <div class="flex justify-center md:justify-start space-x-4">
-            <a href="https://www.facebook.com/people/Valenzuela-City-Smashers/100091987359934/" class="text-secondary hover:text-white transition">
+            <a href="https://www.facebook.com/people/Valenzuela-City-Smashers/100091987359934/"
+              class="text-secondary hover:text-white transition">
               <i data-feather="facebook"></i>
             </a>
             <a href="#" class="text-secondary hover:text-white transition">
@@ -334,7 +457,8 @@ $maskedEmail = mask_email($userEmail);
             </a>
           </div>
           <div class="mt-4">
-            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">support@maysanbadmintoncourt.site</p>
+            <p class="text-secondary md:break-words [@media(min-width:1100px)]:break-normal">
+              support@maysanbadmintoncourt.site</p>
             <p class="text-secondary">0915-865-3350</p>
           </div>
         </div>
@@ -355,9 +479,9 @@ $maskedEmail = mask_email($userEmail);
     });
 
     feather.replace();
-    (function(){
-      const ids = ['profile','security','preferences','payments','privacy'];
-      function showSection(targetId){
+    (function () {
+      const ids = ['profile', 'security', 'preferences', 'payments', 'privacy'];
+      function showSection(targetId) {
         ids.forEach(id => {
           const el = document.getElementById(id);
           if (!el) return;
@@ -522,9 +646,63 @@ $maskedEmail = mask_email($userEmail);
             setButtonLoading(submitBtn, false);
           }
         });
+        const eyeIconMarkup = {
+          default:
+            '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />',
+          hidden:
+            '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.77 21.77 0 0 1 5.06-6.94M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 3-3M1 1l22 22" />'
+        };
+
+        const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+
+        togglePasswordButtons.forEach(button => {
+          button.addEventListener('click', () => {
+            const targetId = button.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            const icon = button.querySelector('svg');
+
+            const hidden = input.type === 'password';
+            input.type = hidden ? 'text' : 'password';
+            icon.innerHTML = hidden ? eyeIconMarkup.hidden : eyeIconMarkup.default;
+          });
+        });
+
+
+        const newPasswordInput = document.getElementById('new-password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const matchMessage = document.getElementById('password-match-message');
+
+        function checkPasswords() {
+          const newPass = newPasswordInput.value;
+          const confirmPass = confirmPasswordInput.value;
+
+          if (confirmPass === '') {
+            matchMessage.textContent = '';
+            matchMessage.className = 'text-xs mt-1 h-4';
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            return;
+          }
+
+          if (newPass === confirmPass) {
+            matchMessage.textContent = 'Passwords match';
+            matchMessage.className = 'text-xs mt-1 h-4 text-green-600';
+            sendOtpBtn.disabled = false;
+            sendOtpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          } else {
+            matchMessage.textContent = 'Passwords do not match';
+            matchMessage.className = 'text-xs mt-1 h-4 text-red-600';
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          }
+        }
+
+        newPasswordInput?.addEventListener('input', checkPasswords);
+        confirmPasswordInput?.addEventListener('input', checkPasswords);
+
       }
     })();
   </script>
 </body>
-</html>
 
+</html>
