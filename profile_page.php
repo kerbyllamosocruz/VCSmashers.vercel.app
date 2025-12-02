@@ -10,14 +10,9 @@ $message = $_GET['message'] ?? '';
 
 $current_date = date('Y-m-d');
 $current_time = date('H:i:s');
-$update_sql = "UPDATE bookings 
-               SET status = 'COMPLETED' 
-               WHERE (event_date < ?) 
-               OR (event_date = ? AND event_time < ?) 
-               AND status = 'CONFIRMED'";
-$update_stmt = $conn->prepare($update_sql);
-$update_stmt->bind_param('sss', $current_date, $current_date, $current_time);
-$update_stmt->execute();
+
+// Note: We don't automatically update booking status here anymore
+// Status only changes when user manually cancels or when moved to past bookings
 
 $bookings = [];
 $user_id = $_SESSION['user_id'] ?? 0;
@@ -37,10 +32,25 @@ $upcoming_bookings = [];
 $past_bookings = [];
 
 foreach ($bookings as $booking) {
-  if (in_array($booking['status'], ['CONFIRMED', 'CANCELLED'])) {
-    $upcoming_bookings[] = $booking;
-  } elseif ($booking['status'] === 'COMPLETED') {
+  // Check if the booking time has actually finished (regardless of status)
+  $booking_date = $booking['event_date'];
+  $booking_time = $booking['event_time'];
+  
+  // Calculate the end time (1 hour after start time)
+  $booking_end_time = date('H:i:s', strtotime($booking_time) + 3600);
+  
+  // Check if booking has finished
+  $current_datetime = date('Y-m-d H:i:s');
+  $booking_end_datetime = $booking_date . ' ' . $booking_end_time;
+  
+  $is_finished = (strtotime($current_datetime) >= strtotime($booking_end_datetime));
+  
+  if ($is_finished) {
+    // Booking time has passed, put in past bookings
     $past_bookings[] = $booking;
+  } else {
+    // Booking time hasn't finished yet, put in upcoming bookings
+    $upcoming_bookings[] = $booking;
   }
 }
 
@@ -200,7 +210,6 @@ foreach ($bookings as $booking) {
           <li><a href="account_settings.php#profile" class="text-gray-700 hover:text-primary">Profile</a></li>
           <li><a href="account_settings.php#security" class="text-gray-700 hover:text-primary">Security</a></li>
           <li><a href="account_settings.php#preferences" class="text-gray-700 hover:text-primary">Preferences</a></li>
-          <li><a href="account_settings.php#payments" class="text-gray-700 hover:text-primary">Payments</a></li>
           <li><a href="#booking-history" class="text-gray-700 hover:text-primary">Booking History</a></li>
           <li>
             <form action="logout.php" method="POST" style="margin:0;">
@@ -251,7 +260,7 @@ foreach ($bookings as $booking) {
                   <p class="text-sm text-gray-500">
                     <?php echo date("F j, Y", strtotime($booking['event_date'])) . " - " . date("g:i A", strtotime($booking['event_time'])) ?>
                   </p>
-                  <?php if ($booking['status'] === 'CONFIRMED'): ?>
+                  <?php if ($booking['status'] === 'CONFIRMED' || $booking['status'] === 'COMPLETED'): ?>
                     <p class="text-sm text-green-600 font-medium mt-1 inline-flex items-center">
                       <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"

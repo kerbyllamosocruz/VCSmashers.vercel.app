@@ -47,7 +47,7 @@
 
                     <div class="flex-1">
                         <label for="num_of_participants" class="block text-sm font-medium text-accent">No. of participants</label>
-                        <input type="number" id="num_of_participants" name="num_of_participants" min="1" required
+                        <input type="number" id="num_of_participants" name="num_of_participants" min="1" max="100" required
                             class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary text-accent" />
                     </div>
                 </div>

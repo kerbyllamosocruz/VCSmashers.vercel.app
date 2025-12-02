@@ -33,6 +33,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $event_time = $_POST['event_time'] ?? date('H:i:s');
     $event_end_time = $_POST['event_end_time'] ?? null;
 
+    // Validate number of participants
+    if ($num_of_participants < 1 || $num_of_participants > 100) {
+        echo json_encode(['status' => 'error', 'message' => 'Number of participants must be between 1 and 100.']);
+        exit;
+    }
+
+    // Validate that the booking time hasn't already passed
+    if ($event_date === date('Y-m-d')) {
+        $currentHour = (int)date('H');
+        $eventHour = (int)substr($event_time, 0, 2);
+        
+        // Only block booking for previous hours, allow current and future hours
+        if ($currentHour > $eventHour) {
+            echo json_encode(['status' => 'error', 'message' => 'Cannot book a time slot that has already passed.']);
+            exit;
+        }
+    }
+
     $fee_per_head = match ($activity_name) {
         'Pickleball' => 100,
         'Badminton' => 80,
@@ -54,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     foreach ($slots as $s) {
-        $chk = $conn->prepare("SELECT COUNT(*) AS c FROM bookings WHERE event_date = ? AND court_number = ? AND event_time = ? AND status IN ('PENDING','CONFIRMED')");
+        $chk = $conn->prepare("SELECT COUNT(*) AS c FROM bookings WHERE event_date = ? AND court_number = ? AND event_time = ? AND status IN ('PENDING','CONFIRMED','COMPLETED')");
         $chk->bind_param("sis", $event_date, $court_number, $s);
         $chk->execute();
         $res = $chk->get_result()->fetch_assoc();

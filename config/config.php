@@ -1,4 +1,7 @@
 <?php
+// Set timezone to Philippine time
+date_default_timezone_set('Asia/Manila');
+
 $host = "localhost"; 
 $user = "root"; 
 $pass = ""; 

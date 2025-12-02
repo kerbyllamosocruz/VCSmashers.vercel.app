@@ -151,13 +151,26 @@ function loadCourts(date) {
 document
   .getElementById("court-container")
   .addEventListener("click", function (e) {
+    // Check if any button was clicked and if it's disabled
+    const clickedBtn = e.target.closest("button");
+    if (clickedBtn && clickedBtn.disabled) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    
     const btn = e.target.closest(".openBookingModal");
     if (!btn) return;
+    
+    // Check if the button is disabled
+    if (btn.disabled) return;
 
     // If not logged in, show login modal instead of booking
     if (typeof window.IS_LOGGED_IN !== "undefined" && !window.IS_LOGGED_IN) {
       const loginModal = document.getElementById("loginModal");
-      if (loginModal) loginModal.classList.remove("modal-hidden");
+      if (loginModal) {
+        loginModal.classList.remove("modal-hidden");
+      }
       return;
     }
 
@@ -309,5 +322,237 @@ document.addEventListener("click", function (e) {
   if (closeBtn) {
     const modal = document.getElementById("bookingModal");
     modal.classList.add("modal-hidden", "hidden");
+  }
+});
+
+// -----------------
+// Validate participants input
+// -----------------
+document.addEventListener("input", function (e) {
+  if (e.target.id === "num_of_participants") {
+    let value = parseInt(e.target.value);
+    
+    // If value exceeds 100, set it to 100
+    if (value > 100) {
+      e.target.value = 100;
+    }
+    // If value is less than 1, set it to 1
+    else if (value < 1 && e.target.value !== "") {
+      e.target.value = 1;
+    }
+  }
+});
+
+// Prevent typing more than 3 digits in participants field
+document.addEventListener("keydown", function (e) {
+  if (e.target.id === "num_of_participants") {
+    const value = e.target.value;
+    
+    // Allow backspace, delete, tab, escape, enter
+    if ([8, 9, 27, 13, 46].indexOf(e.keyCode) !== -1 ||
+        // Allow Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+        (e.keyCode === 65 && e.ctrlKey === true) ||
+        (e.keyCode === 67 && e.ctrlKey === true) ||
+        (e.keyCode === 86 && e.ctrlKey === true) ||
+        (e.keyCode === 88 && e.ctrlKey === true)) {
+      return;
+    }
+    
+    // Prevent if already 3 digits and trying to add more
+    if (value.length >= 3) {
+      e.preventDefault();
+    }
+    
+    // Only allow numbers
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+      e.preventDefault();
+    }
+  }
+});
+
+// -----------------
+// Handle login modal close button in schedule page
+// -----------------
+document.addEventListener("click", function (e) {
+  // Check if clicked element is the close button inside login modal
+  if (e.target.closest("#closeModal") && e.target.closest("#loginModal")) {
+    e.preventDefault();
+    e.stopPropagation();
+    const loginModal = document.getElementById("loginModal");
+    if (loginModal) {
+      loginModal.classList.add("modal-hidden");
+    }
+  }
+});
+
+// -----------------
+// Handle receipt modal
+// -----------------
+let currentReceiptData = null;
+
+// Open receipt modal
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest(".view-receipt-btn");
+  if (!btn) return;
+
+  const bookingId = btn.dataset.bookingId;
+  if (!bookingId) return;
+
+  const modal = document.getElementById("receiptModal");
+  const content = document.getElementById("receiptContent");
+
+  if (!modal || !content) return;
+
+  // Show modal
+  modal.classList.remove("hidden");
+
+  // Reset content to loading state
+  content.innerHTML = `
+    <div class="text-center text-gray-500">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+      Loading receipt...
+    </div>
+  `;
+
+  // Fetch receipt data
+  fetch(`fetch_receipt.php?booking_id=${bookingId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.success && data.receipt) {
+        currentReceiptData = data.receipt;
+        content.innerHTML = `
+          <div class="space-y-4">
+            <div class="text-center border-b border-gray-200 pb-4">
+              <h2 class="text-xl font-bold text-primary">BOOKING RECEIPT</h2>
+              <p class="text-sm text-gray-600">Transaction ID: <span class="font-mono font-bold">${data.receipt.transaction_id || 'N/A'}</span></p>
+              <p class="text-sm text-gray-600">Date: <span class="font-mono font-bold">${data.receipt.date_now}</span></p>
+            </div>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Customer:</span>
+                <span class="font-bold">${data.receipt.customer_name}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-gray-600">Activity:</span>
+                <span class="font-bold">${data.receipt.title}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-gray-600">Court:</span>
+                <span class="font-bold">Court ${data.receipt.court_number}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-gray-600">Date:</span>
+                <span class="font-bold">${data.receipt.event_date}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-gray-600">Time:</span>
+                <span class="font-bold">${data.receipt.event_time}</span>
+              </div>
+              
+              <div class="flex justify-between">
+                <span class="text-gray-600">Participants:</span>
+                <span class="font-bold">${data.receipt.num_of_participants}</span>
+              </div>
+              
+              <div class="border-t border-gray-200 pt-3 flex justify-between text-lg font-bold">
+                <span>Total Amount:</span>
+                <span class="text-green-600">PHP ${data.receipt.total_fee}</span>
+              </div>
+              
+              <div class="bg-gray-50 p-3 rounded-lg text-center">
+                <span class="inline-block px-3 py-1 rounded-full text-sm font-medium ${data.receipt.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">
+                  ${data.receipt.status}
+                </span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        content.innerHTML = `<p class="text-red-600 text-center">Error loading receipt. Please try again.</p>`;
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching receipt:', error);
+      content.innerHTML = `<p class="text-red-600 text-center">Error loading receipt. Please try again.</p>`;
+    });
+});
+
+// Close receipt modal
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#closeReceiptModal")) {
+    document.getElementById("receiptModal").classList.add("hidden");
+  }
+  
+  // Close if clicking outside modal
+  if (e.target.id === "receiptModal") {
+    document.getElementById("receiptModal").classList.add("hidden");
+  }
+});
+
+// Download receipt
+document.addEventListener("click", function (e) {
+  if (e.target.closest("#downloadReceiptBtn")) {
+    const content = document.getElementById("receiptContent");
+    const btn = e.target.closest("#downloadReceiptBtn");
+    
+    if (!content || !currentReceiptData) return;
+    
+    btn.innerHTML = "Generating...";
+    btn.disabled = true;
+    
+    // Create a temporary element for html2canvas
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content.innerHTML;
+    tempDiv.style.background = 'white';
+    tempDiv.style.padding = '20px';
+    tempDiv.style.width = '400px';
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    document.body.appendChild(tempDiv);
+    
+    // Use html2canvas if available
+    if (typeof html2canvas !== 'undefined') {
+      html2canvas(tempDiv, { scale: 2, useCORS: true }).then(canvas => {
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = `receipt-booking-${currentReceiptData.booking_id}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        document.body.removeChild(tempDiv);
+        btn.innerHTML = "Download Receipt";
+        btn.disabled = false;
+      }).catch(err => {
+        console.error('Error generating receipt:', err);
+        document.body.removeChild(tempDiv);
+        btn.innerHTML = "Error - Try again";
+        btn.disabled = false;
+        setTimeout(() => {
+          btn.innerHTML = "Download Receipt";
+        }, 2000);
+      });
+    } else {
+      // Fallback: open in new window for printing
+      const newWindow = window.open('', '_blank');
+      newWindow.document.write(`
+        <html>
+          <head><title>Receipt</title></head>
+          <body style="font-family: Arial, sans-serif; padding: 20px;">
+            ${content.innerHTML}
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+      newWindow.print();
+      document.body.removeChild(tempDiv);
+      btn.innerHTML = "Download Receipt";
+      btn.disabled = false;
+    }
   }
 });

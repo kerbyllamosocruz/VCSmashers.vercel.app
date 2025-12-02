@@ -152,8 +152,6 @@ $maskedEmail = mask_email($userEmail);
             <li><a href="#profile" class="text-gray-700 hover:text-primary">Profile</a></li>
             <li><a href="#security" class="text-gray-700 hover:text-primary">Security</a></li>
             <li><a href="#preferences" class="text-gray-700 hover:text-primary">Preferences</a></li>
-            <li><a href="#payments" class="text-gray-700 hover:text-primary">Payments</a></li>
-            <li><a href="#privacy" class="text-gray-700 hover:text-primary">Privacy</a></li>
             <li><a href="profile_page.php#booking-history" class="text-gray-700 hover:text-primary">Booking History</a>
             </li>
             <li>
@@ -287,7 +285,7 @@ $maskedEmail = mask_email($userEmail);
           <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h4 class="font-semibold mb-2">Two-Factor Authentication</h4>
-              <p class="text-sm text-gray-600 mb-3">Coming soon: Email code or authenticator app.</p>
+              <p class="text-sm text-gray-600 mb-3">Email code or authenticator app.</p>
               <button class="px-4 py-2 bg-gray-200 rounded-md text-gray-600 cursor-not-allowed">Set up</button>
             </div>
             <div>
@@ -374,15 +372,15 @@ $maskedEmail = mask_email($userEmail);
 
         <div id="payments" class="bg-white p-6 rounded-lg shadow-lg settings-section">
           <h3 class="text-xl font-bold text-primary mb-2">Payments</h3>
-          <p class="text-gray-600">Saved payment methods and billing receipts — coming soon.</p>
+          <p class="text-gray-600">Saved payment methods and billing receipts.</p>
         </div>
 
         <div id="privacy" class="bg-white p-6 rounded-lg shadow-lg settings-section">
           <h3 class="text-xl font-bold text-primary mb-2">Privacy</h3>
           <ul class="list-disc pl-6 text-gray-700">
-            <li>Data visibility controls — coming soon.</li>
-            <li>Download my data — coming soon.</li>
-            <li>Deactivate/Delete account — coming soon.</li>
+            <li>Data visibility controls.</li>
+            <li>Download my data.</li>
+            <li>Deactivate/Delete account.</li>
           </ul>
         </div>
 
