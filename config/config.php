@@ -20,10 +20,13 @@ $db = getenv('DB_NAME');
 
 $conn = mysqli_init();
 
+$flags = 0;
 if ($port == 4000 || getenv('DB_USE_SSL') === 'true') {
     mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
+    $flags = MYSQLI_CLIENT_SSL;
 }
-if (!$conn->real_connect($host, $user, $pass, $db, $port)) {
+
+if (!$conn->real_connect($host, $user, $pass, $db, $port, null, $flags)) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
